@@ -1,36 +1,27 @@
-import {
-	Collection,
-	ContextMenuCommandBuilder,
-	RESTPostAPIApplicationCommandsJSONBody,
-	Routes,
-	SlashCommandOptionsOnlyBuilder,
-	type Interaction,
-	type REST
-} from "discord.js";
+import { Collection, RESTPostAPIApplicationCommandsJSONBody, Routes, REST } from "discord.js";
 import config from "../config";
+import { Command } from "./types/commands.types";
 
-type Command = {
-	data: SlashCommandOptionsOnlyBuilder | ContextMenuCommandBuilder;
-	execute: (interaction: Interaction) => Promise<void>;
-	requiredRoles: (typeof config.roleIds)[keyof typeof config.roleIds][];
-};
+export class CommandsBuilder<T extends Command> {
+	protected commands = new Collection<string, T>();
 
-export class CommandsBuilder {
-	protected commands = new Collection<string, Command>();
-
-	public static combine(...commandsBuilders: CommandsBuilder[]) {
+	public static combine(...commandsBuilders: CommandsBuilder<Command>[]) {
 		const combinedCommandBuilder = new CommandsBuilder();
 
 		commandsBuilders.forEach(commandsBuilder => {
 			commandsBuilder.commands.forEach((command, name) => {
-				combinedCommandBuilder.commands.set(name, command);
+				combinedCommandBuilder.addCommand(command.data, command.execute, command.requiredRoles);
 			});
 		});
 		return combinedCommandBuilder;
 	}
 
-	public addCommand(data: Command["data"], execute: Command["execute"], requiredRoles: Command["requiredRoles"]): this {
-		this.commands.set(data.name, { data, execute, requiredRoles });
+	public addCommand(data: T["data"], execute: T["execute"], requiredRoles: T["requiredRoles"]): this {
+		if (this.commands.has(data.name)) {
+			throw new Error(`[commands-builder] Cannot add command ${data.name}: a command with this name already exists.`);
+		}
+
+		this.commands.set(data.name, { data, execute, requiredRoles } as T);
 		return this;
 	}
 

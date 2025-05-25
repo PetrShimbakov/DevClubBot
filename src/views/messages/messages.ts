@@ -15,16 +15,16 @@ class Messages {
 		};
 	}
 
-	public rulesSent(channel: string): InteractionReplyOptions {
+	public rulesSent(channelId: string): InteractionReplyOptions {
 		return {
-			content: `Я успешно отправил правила в указанный вами канал ${channel}.`,
+			content: `Я успешно отправил правила в указанный вами канал <#${channelId}>.`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
 
-	public rolesSent(channel: string): InteractionReplyOptions {
+	public rolesSent(channelId: string): InteractionReplyOptions {
 		return {
-			content: `Я успешно отправил авторизацию ролей в указанный вами канал ${channel}.`,
+			content: `Я успешно отправил авторизацию ролей в указанный вами канал <#${channelId}>.`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
