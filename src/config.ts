@@ -17,6 +17,14 @@ interface IConfig {
 		scripter: string;
 		audioSpecialist: string;
 	};
+	emojiIds: {
+		client: string;
+		builder: string;
+		modeler: string;
+		scripter: string;
+		audioSpecialist: string;
+		designer: string;
+	};
 	guildId: string;
 }
 
@@ -32,10 +40,12 @@ class Config implements IConfig {
 		token: getEnvVar("TOKEN"),
 		id: getEnvVar("CLIENT_ID")
 	};
+
 	public readonly imageUrls = {
 		logo: getEnvVar("LOGO"),
 		banner: getEnvVar("BANNER")
 	};
+
 	public readonly roleIds = {
 		administrator: getEnvVar("ADMINISTRATOR_ROLE_ID"),
 		client: getEnvVar("CLIENT_ROLE_ID"),
@@ -43,8 +53,19 @@ class Config implements IConfig {
 		modeler: getEnvVar("MODELER_ROLE_ID"),
 		scripter: getEnvVar("SCRIPTER_ROLE_ID"),
 		audioSpecialist: getEnvVar("AUDIO_SPECIALIST_ROLE_ID"),
-		member: getEnvVar("MEMBER_ROLE_ID")
+		member: getEnvVar("MEMBER_ROLE_ID"),
+		designer: getEnvVar("DESIGNER_ROLE_ID")
 	};
+
+	public readonly emojiIds = {
+		client: getEnvVar("CLIENT_EMOJI_ID"),
+		builder: getEnvVar("BUILDER_EMOJI_ID"),
+		modeler: getEnvVar("MODELER_EMOJI_ID"),
+		scripter: getEnvVar("SCRIPTER_EMOJI_ID"),
+		audioSpecialist: getEnvVar("AUDIO_SPECIALIST_EMOJI_ID"),
+		designer: getEnvVar("DESIGNER_EMOJI_ID")
+	};
+
 	public readonly guildId = getEnvVar("GUILD_ID");
 }
 
