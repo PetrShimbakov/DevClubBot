@@ -1,6 +1,6 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
 
-class Messages {
+class SuccessMessages {
 	public roleAdded(role: string): InteractionReplyOptions {
 		return {
 			content: `Поздравляю, ты получил новую роль "${role}"!`,
@@ -30,5 +30,5 @@ class Messages {
 	}
 }
 
-const messages = new Messages();
-export default messages;
+const successMessages = new SuccessMessages();
+export default successMessages;

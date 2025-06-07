@@ -22,12 +22,22 @@ class ErrorMessages {
 	};
 
 	public readonly timeLimit: InteractionReplyOptions = {
-		content: "Время на заполнение анкеты истекло. В следующий раз попробуйте завершить её чуть быстрее.",
+		content: "Время на заполнение анкеты истекло. Пока ты думал, мой процессор успел остынуть. 🥶",
 		flags: MessageFlags.Ephemeral
 	};
 
 	public readonly userNotRegistered: InteractionReplyOptions = {
-		content: "Данный пользователь не зарегистрирован как разработчик.",
+		content: "Кто это вообще такой? 🤔 Пользователь не зарегистрирован как разработчик.",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly commandNotFound: InteractionReplyOptions = {
+		content: "Такой команды у меня нет... Или ты что-то выдумал? 🤨",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly tooManyRequests: InteractionReplyOptions = {
+		content: "Ого, не так быстро! Дай отдышаться, у меня чуть не расплавился сервер. 🔥",
 		flags: MessageFlags.Ephemeral
 	};
 }

@@ -7,7 +7,7 @@ import { CommandsBuilder } from "./commands/commands-builder";
 const rest = new REST().setToken(config.bot.token);
 const commands = CommandsBuilder.combine(slashCommands, contextMenuCommands);
 
-console.log(`Commands Started refreshing ${commands.commandsCollection.size} commands.`);
+console.log(`Commands Started refreshing ${commands.commandsQty} commands.`);
 
 commands
 	.register(rest)

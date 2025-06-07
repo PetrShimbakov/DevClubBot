@@ -4,7 +4,7 @@ import contextMenuCommands from "../commands/context-menu-commands";
 import { CommandsBuilder } from "../commands/commands-builder";
 import errorMessages from "../views/messages/error-messages";
 import { safeReply } from "../utils/reply-utils";
-import { Command } from "../commands/types/commands-types";
+import { Command } from "../types/commands";
 
 export function initializeCommandsController(client: Client) {
 	const commands: CommandsBuilder<Command> = CommandsBuilder.combine(slashCommands, contextMenuCommands);
@@ -14,10 +14,16 @@ export function initializeCommandsController(client: Client) {
 		if (!interaction.inCachedGuild()) return;
 		if (!interaction.member) return; // Recommendation from community.
 
-		const command = commands.commandsCollection.get(interaction.commandName);
-		if (!command) return;
+		const command = commands.getCommand(interaction.commandName, interaction.commandType);
+
+		if (!command) {
+			const commandKey = `${interaction.commandName}:${interaction.commandType}`;
+			console.error(`[commands-controller] Failed to execute command "${commandKey}": Command not found.`);
+			return safeReply(interaction, errorMessages.commandNotFound);
+		}
 
 		const hasRequiredRoles = command.requiredRoles.some(roleId => interaction.member.roles.cache.has(roleId));
+
 		const isGuildOwner = interaction.user.id === interaction.guild.ownerId;
 
 		if (!hasRequiredRoles && !isGuildOwner) return safeReply(interaction, errorMessages.noRights);
