@@ -1,19 +1,7 @@
-import config from "../config";
-import { safeReply } from "../utils/reply-utils";
-import rulesEmbed from "../views/embeds/rules";
 import { CommandsBuilder } from "./commands-builder";
-import {
-	Interaction,
-	SlashCommandChannelOption,
-	SlashCommandBuilder,
-	ChatInputCommandInteraction,
-	ChannelType,
-	TextChannel,
-	NewsChannel
-} from "discord.js";
-import { SlashCommand } from "./types/commands.types";
-import errorMessages from "../views/messages/error-messages";
-import messages from "../views/messages/messages";
+import { SlashCommandChannelOption, SlashCommandBuilder } from "discord.js";
+import { SlashCommand } from "./types/commands-types";
+import sendRules from "../controllers/commands/send-rules";
 
 const slashCommands = new CommandsBuilder<SlashCommand>()
 
@@ -43,32 +31,7 @@ const slashCommands = new CommandsBuilder<SlashCommand>()
 					.setDescription("Канал, в который будут отправлены правила.")
 					.setRequired(true)
 			),
-		async interaction => {
-			const channel = interaction.options.getChannel("target-channel");
-
-			console.log(
-				"typeof channel:",
-				typeof channel,
-				"| channel instanceof TextChannel:",
-				channel instanceof TextChannel,
-				"| channel instanceof NewsChannel:",
-				channel instanceof NewsChannel,
-				"| channel?.constructor.name:",
-				channel?.constructor?.name,
-				"| channel?.type:",
-				channel?.type
-			);
-			if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel))
-				return safeReply(interaction, errorMessages.notTextChannel);
-
-			try {
-				await channel.send({ embeds: [rulesEmbed] });
-			} catch (error) {
-				console.error(`[slash-commands] Error while sending message: ${error}`);
-			}
-
-			return safeReply(interaction, messages.rulesSent(channel.id));
-		},
+		sendRules,
 		[]
 	);
 

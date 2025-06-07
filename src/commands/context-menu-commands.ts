@@ -1,7 +1,7 @@
 import config from "../config";
 import { CommandsBuilder } from "./commands-builder";
-import { Interaction, ContextMenuCommandBuilder, ApplicationCommandType, ContextMenuCommandInteraction } from "discord.js";
-import { ContextMenuCommand } from "./types/commands.types";
+import { ContextMenuCommandBuilder, ApplicationCommandType } from "discord.js";
+import { ContextMenuCommand } from "./types/commands-types";
 
 const contextMenuCommands = new CommandsBuilder<ContextMenuCommand>().addCommand(
 	new ContextMenuCommandBuilder().setName("Информация пользователя.").setType(ApplicationCommandType.User),

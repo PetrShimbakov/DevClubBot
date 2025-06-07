@@ -1,6 +1,6 @@
 import { Collection, RESTPostAPIApplicationCommandsJSONBody, Routes, REST } from "discord.js";
 import config from "../config";
-import { Command } from "./types/commands.types";
+import { Command } from "./types/commands-types";
 
 export class CommandsBuilder<T extends Command> {
 	protected commands = new Collection<string, T>();
