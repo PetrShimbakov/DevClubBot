@@ -4,37 +4,37 @@ import config from "../../config";
 const roleOptions = [
 	new StringSelectMenuOptionBuilder()
 		.setLabel("Client (Заказчик)")
-		.setValue(config.roleIds.client)
+		.setValue(config.devRoleIds.client)
 		.setEmoji({ id: config.emojiIds.client, name: "Client" })
 		.setDescription("Ты идею — мы панику и кофе."),
 
 	new StringSelectMenuOptionBuilder()
 		.setLabel("Builder (Строитель)")
-		.setValue(config.roleIds.builder)
+		.setValue(config.devRoleIds.builder)
 		.setEmoji({ id: config.emojiIds.builder, name: "Builder" })
 		.setDescription("Гравитация — это только рекомендация."),
 
 	new StringSelectMenuOptionBuilder()
 		.setLabel("Modeler (Моделлер)")
-		.setValue(config.roleIds.modeler)
+		.setValue(config.devRoleIds.modeler)
 		.setEmoji({ id: config.emojiIds.modeler, name: "Modeler" })
 		.setDescription("Если красиво не вышло, скажи, что артхаус."),
 
 	new StringSelectMenuOptionBuilder()
 		.setLabel("Scripter (Скриптер)")
-		.setValue(config.roleIds.scripter)
+		.setValue(config.devRoleIds.scripter)
 		.setEmoji({ id: config.emojiIds.scripter, name: "Scripter" })
 		.setDescription("Код работает? Значит, ты ещё не закончил."),
 
 	new StringSelectMenuOptionBuilder()
 		.setLabel("Audio Specialist (Аудио специалист)")
-		.setValue(config.roleIds.audioSpecialist)
+		.setValue(config.devRoleIds.audioSpecialist)
 		.setEmoji({ id: config.emojiIds.audioSpecialist, name: "AudioSpecialist" })
 		.setDescription("Тише не надо. Врубим погромче."),
 
 	new StringSelectMenuOptionBuilder()
 		.setLabel("Designer (Дизайнер)")
-		.setValue(config.roleIds.designer)
+		.setValue(config.devRoleIds.designer)
 		.setEmoji({ id: config.emojiIds.designer, name: "Designer" })
 		.setDescription("Не баг, а фича дизайна.")
 ];

@@ -1,40 +1,17 @@
 import "dotenv/config";
 
-interface IConfig {
-	bot: {
-		token: string;
-		id: string;
-	};
-	imageUrls: {
-		logo: string;
-		banner: string;
-	};
-	roleIds: {
-		administrator: string;
-		client: string;
-		builder: string;
-		modeler: string;
-		scripter: string;
-		audioSpecialist: string;
-	};
-	emojiIds: {
-		client: string;
-		builder: string;
-		modeler: string;
-		scripter: string;
-		audioSpecialist: string;
-		designer: string;
-	};
-	guildId: string;
-}
-
-class Config implements IConfig {
+class Config {
 	private static instance: Config;
 	private constructor() {}
 
 	public static get(): Config {
 		return Config.instance ?? (Config.instance = new Config());
 	}
+
+	public readonly database = {
+		url: getEnvVar("DATABASE_URL"),
+		name: getEnvVar("DATABASE_NAME")
+	};
 
 	public readonly bot = {
 		token: getEnvVar("TOKEN"),
@@ -46,15 +23,18 @@ class Config implements IConfig {
 		banner: getEnvVar("BANNER")
 	};
 
-	public readonly roleIds = {
-		administrator: getEnvVar("ADMINISTRATOR_ROLE_ID"),
+	public readonly devRoleIds = {
 		client: getEnvVar("CLIENT_ROLE_ID"),
 		builder: getEnvVar("BUILDER_ROLE_ID"),
 		modeler: getEnvVar("MODELER_ROLE_ID"),
 		scripter: getEnvVar("SCRIPTER_ROLE_ID"),
 		audioSpecialist: getEnvVar("AUDIO_SPECIALIST_ROLE_ID"),
-		member: getEnvVar("MEMBER_ROLE_ID"),
 		designer: getEnvVar("DESIGNER_ROLE_ID")
+	};
+
+	public readonly roleIds = {
+		member: getEnvVar("MEMBER_ROLE_ID"),
+		administrator: getEnvVar("ADMINISTRATOR_ROLE_ID")
 	};
 
 	public readonly emojiIds = {
