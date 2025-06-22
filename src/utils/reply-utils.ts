@@ -1,18 +1,7 @@
-import {
-	Interaction,
-	InteractionReplyOptions,
-	ChatInputCommandInteraction,
-	MessageContextMenuCommandInteraction,
-	UserContextMenuCommandInteraction
-} from "discord.js";
-
-const isSupported = (
-	interaction: Interaction
-): interaction is ChatInputCommandInteraction | MessageContextMenuCommandInteraction | UserContextMenuCommandInteraction =>
-	interaction.isChatInputCommand() || interaction.isContextMenuCommand();
+import { Interaction, InteractionReplyOptions } from "discord.js";
 
 async function unsafeReply(interaction: Interaction, options: InteractionReplyOptions): Promise<void> {
-	if (!isSupported(interaction)) return;
+	if (!interaction.isRepliable()) return;
 
 	if (interaction.replied || interaction.deferred) {
 		await interaction.followUp(options);
@@ -22,8 +11,7 @@ async function unsafeReply(interaction: Interaction, options: InteractionReplyOp
 }
 
 async function safeReply(interaction: Interaction, options: InteractionReplyOptions, retries: number = 0): Promise<void> {
-	if (!isSupported(interaction))
-		throw new Error("[reply-utils] safeReply can only be used with ChatInputCommand or ContextMenuCommand interactions.");
+	if (!interaction.isRepliable()) throw new Error("[reply-utils] safeReply can only be used with repliable interactions.");
 
 	for (let _ = 0; _ <= retries; _++) {
 		try {

@@ -32,6 +32,15 @@ class Config {
 		designer: getEnvVar("DESIGNER_ROLE_ID")
 	};
 
+	public readonly devRoleLabels: { [id: string]: string } = {
+		[this.devRoleIds.client]: "Client",
+		[this.devRoleIds.builder]: "Builder",
+		[this.devRoleIds.modeler]: "Modeler",
+		[this.devRoleIds.scripter]: "Scripter",
+		[this.devRoleIds.audioSpecialist]: "Audio Specialist",
+		[this.devRoleIds.designer]: "Designer"
+	};
+
 	public readonly roleIds = {
 		member: getEnvVar("MEMBER_ROLE_ID"),
 		administrator: getEnvVar("ADMINISTRATOR_ROLE_ID")

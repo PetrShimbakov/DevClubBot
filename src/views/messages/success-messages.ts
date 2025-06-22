@@ -1,16 +1,17 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
+import config from "../../config";
 
 class SuccessMessages {
-	public roleAdded(role: string): InteractionReplyOptions {
+	public roleAdded(roleId: string): InteractionReplyOptions {
 		return {
-			content: `Поздравляю, ты получил новую роль "${role}"!`,
+			content: `Поздравляю, ты получил новую роль "${config.devRoleLabels[roleId]}"!`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
 
-	public roleRemoved(role: string): InteractionReplyOptions {
+	public roleRemoved(roleId: string): InteractionReplyOptions {
 		return {
-			content: `Ваша роль "${role}" была удалена.`,
+			content: `Ваша роль "${config.devRoleLabels[roleId]}" была удалена.`,
 			flags: MessageFlags.Ephemeral
 		};
 	}

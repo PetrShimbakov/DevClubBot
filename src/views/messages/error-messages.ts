@@ -40,6 +40,16 @@ class ErrorMessages {
 		content: "Ого, не так быстро! Дай отдышаться, у меня чуть не расплавился сервер. 🔥",
 		flags: MessageFlags.Ephemeral
 	};
+
+	public readonly badExperienceData: InteractionReplyOptions = {
+		content: "Ты некорректно указал, являешься ли ты новичком. Напиши просто: 'да' или 'нет'.",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly unrealName: InteractionReplyOptions = {
+		content: "Похоже, ты указал нереалистичное имя. Пожалуйста, введи своё настоящее имя — без шуток и случайных символов.",
+		flags: MessageFlags.Ephemeral
+	};
 }
 
 const errorMessages = new ErrorMessages();

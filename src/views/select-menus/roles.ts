@@ -1,49 +1,39 @@
 import { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import config from "../../config";
+import { IUserData } from "../../types/user-data";
+import { ROLE_SELECT_MENU_ID } from "../../constants/component-ids";
 
-const roleOptions = [
-	new StringSelectMenuOptionBuilder()
-		.setLabel("Client (Заказчик)")
-		.setValue(config.devRoleIds.client)
-		.setEmoji({ id: config.emojiIds.client, name: "Client" })
-		.setDescription("Ты идею — мы панику и кофе."),
+function getDescription(userData: IUserData | null, roleKey: keyof typeof config.devRoleIds): string {
+	return userData && userData.rolesData.some(role => role.roleId === config.devRoleIds[roleKey])
+		? "❌ Убрать роль"
+		: "✔️ Получить роль";
+}
 
-	new StringSelectMenuOptionBuilder()
-		.setLabel("Builder (Строитель)")
-		.setValue(config.devRoleIds.builder)
-		.setEmoji({ id: config.emojiIds.builder, name: "Builder" })
-		.setDescription("Гравитация — это только рекомендация."),
-
-	new StringSelectMenuOptionBuilder()
-		.setLabel("Modeler (Моделлер)")
-		.setValue(config.devRoleIds.modeler)
-		.setEmoji({ id: config.emojiIds.modeler, name: "Modeler" })
-		.setDescription("Если красиво не вышло, скажи, что артхаус."),
-
-	new StringSelectMenuOptionBuilder()
-		.setLabel("Scripter (Скриптер)")
-		.setValue(config.devRoleIds.scripter)
-		.setEmoji({ id: config.emojiIds.scripter, name: "Scripter" })
-		.setDescription("Код работает? Значит, ты ещё не закончил."),
-
-	new StringSelectMenuOptionBuilder()
-		.setLabel("Audio Specialist (Аудио специалист)")
-		.setValue(config.devRoleIds.audioSpecialist)
-		.setEmoji({ id: config.emojiIds.audioSpecialist, name: "AudioSpecialist" })
-		.setDescription("Тише не надо. Врубим погромче."),
-
-	new StringSelectMenuOptionBuilder()
-		.setLabel("Designer (Дизайнер)")
-		.setValue(config.devRoleIds.designer)
-		.setEmoji({ id: config.emojiIds.designer, name: "Designer" })
-		.setDescription("Не баг, а фича дизайна.")
+const roles: { key: keyof typeof config.devRoleIds; label: string }[] = [
+	{ key: "client", label: "Client (Заказчик)" },
+	{ key: "builder", label: "Builder (Строитель)" },
+	{ key: "modeler", label: "Modeler (Моделлер)" },
+	{ key: "scripter", label: "Scripter (Скриптер)" },
+	{ key: "audioSpecialist", label: "Audio Specialist (Аудио специалист)" },
+	{ key: "designer", label: "Designer (Дизайнер)" }
 ];
 
-const roleSelectMenu = new StringSelectMenuBuilder()
-	.setCustomId("roles-select-menu")
-	.setPlaceholder("Выбери свою роль.")
-	.setMinValues(1)
-	.setMaxValues(1)
-	.addOptions(roleOptions);
+export default function getRoleSelectMenu(userData?: IUserData) {
+	const roleOptions = roles.map(role => {
+		const emojiId = config.emojiIds[role.key];
+		if (!emojiId) throw new Error(`Emoji ID not found for role key: ${role.key}`);
 
-export default roleSelectMenu;
+		return new StringSelectMenuOptionBuilder()
+			.setLabel(role.label)
+			.setValue(config.devRoleIds[role.key])
+			.setEmoji({ id: emojiId })
+			.setDescription(getDescription(userData ?? null, role.key));
+	});
+
+	return new StringSelectMenuBuilder()
+		.setCustomId(ROLE_SELECT_MENU_ID)
+		.setPlaceholder("Выбери свою роль")
+		.setMinValues(1)
+		.setMaxValues(1)
+		.addOptions(roleOptions);
+}
