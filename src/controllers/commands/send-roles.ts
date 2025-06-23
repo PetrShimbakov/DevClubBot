@@ -6,7 +6,7 @@ import successMessages from "../../views/messages/success-messages";
 import rolesEmbed from "../../views/embeds/roles";
 import roleSelectButton from "../../views/buttons/roles";
 
-async function sendRoles(interaction: ChatInputCommandInteraction) {
+export default async function sendRoles(interaction: ChatInputCommandInteraction) {
 	const channel = interaction.options.getChannel("target-channel");
 	if (!isNewsOrTextChannel(channel)) return safeReply(interaction, errorMessages.notTextChannel);
 
@@ -17,5 +17,3 @@ async function sendRoles(interaction: ChatInputCommandInteraction) {
 
 	await safeReply(interaction, successMessages.rolesSent(channel.id));
 }
-
-export default sendRoles;

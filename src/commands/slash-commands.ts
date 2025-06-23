@@ -3,6 +3,7 @@ import { SlashCommandChannelOption, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../types/commands";
 import sendRules from "../controllers/commands/send-rules";
 import sendRoles from "../controllers/commands/send-roles";
+import config from "../config";
 
 const slashCommands = new CommandsBuilder<SlashCommand>()
 

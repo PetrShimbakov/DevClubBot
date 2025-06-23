@@ -13,8 +13,8 @@ interface BaseCommand<TData, TInteraction> {
 	requiredRoles: (typeof config.roleIds)[keyof typeof config.roleIds][];
 }
 
-type SlashCommand = BaseCommand<SlashCommandOptionsOnlyBuilder, ChatInputCommandInteraction>;
-type ContextMenuCommand = BaseCommand<ContextMenuCommandBuilder, ContextMenuCommandInteraction>;
+type SlashCommand = BaseCommand<SlashCommandOptionsOnlyBuilder, ChatInputCommandInteraction<"cached">>;
+type ContextMenuCommand = BaseCommand<ContextMenuCommandBuilder, ContextMenuCommandInteraction<"cached">>;
 type Command = SlashCommand | ContextMenuCommand;
 type CommandMinimum = { type?: ApplicationCommandType; name: string };
 

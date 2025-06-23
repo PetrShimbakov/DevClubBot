@@ -15,28 +15,28 @@ const rolesEmbed = new EmbedBuilder()
 	})
 	.addFields(
 		{
-			name: "<:Client:1378758993417076827> Client (Заказчик)",
+			name: `<:Client:${config.emojiIds.client}> Client (Заказчик)`,
 			value:
 				"Есть идея для игры? Закажи её разработку у нас. Заказчик формулирует требования и работает с командой для реализации проекта."
 		},
 		{
-			name: "<:Builder:1378758991609331762> Builder (Строитель)",
+			name: `<:Builder:${config.emojiIds.builder}> Builder (Строитель)`,
 			value: "Создаёт уровни и локации в Roblox Studio, проектируя карты и размещая объекты для увлекательной игры."
 		},
 		{
-			name: "<:Modeler:1378758996907003994> Modeler (Моделлер)",
+			name: `<:Modeler:${config.emojiIds.modeler}> Modeler (Моделлер)`,
 			value: "Создаёт 3D-объекты и текстуры в Blender или 3ds Max, создает персонажей, предметы и другие игровые элементы."
 		},
 		{
-			name: "<:Scripter:1378758998559555706> Scripter (Скриптер)",
+			name: `<:Scripter:${config.emojiIds.scripter}> Scripter (Скриптер)`,
 			value: "Программирует функциональность игры, создавая код для управления действиями и взаимодействиями в игре."
 		},
 		{
-			name: "<:AudioSpecialist:1378758989726355487> Audio Specialist (Аудио специалист)",
+			name: `<:AudioSpecialist:${config.emojiIds.audioSpecialist}> Audio Specialist (Аудио специалист)`,
 			value: "Создаёт музыку и/или разрабатывает звуковые эффекты."
 		},
 		{
-			name: "<:Designer:1378758995325616279> Designer (Дизайнер)",
+			name: `<:Designer:${config.emojiIds.designer}> Designer (Дизайнер)`,
 			value:
 				"Разрабатывает визуальные элементы интерфейса, иконки и общее оформление игры, обеспечивая привлекательный и удобный пользовательский опыт."
 		}

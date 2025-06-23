@@ -42,7 +42,7 @@ class Config {
 	};
 
 	public readonly roleIds = {
-		member: getEnvVar("MEMBER_ROLE_ID"),
+		everyone: getEnvVar("EVERYONE_ROLE_ID"),
 		administrator: getEnvVar("ADMINISTRATOR_ROLE_ID")
 	};
 
