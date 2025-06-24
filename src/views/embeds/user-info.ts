@@ -23,7 +23,7 @@ export default function getUserInfoEmbed(userData: IUserData, user: User): Embed
 			)}:D>. ${roleDescription ? `Это ${roleDescription}.` : "Пока без ролей."}`
 		);
 
-	if (userData.bio) embed.addFields({ name: "О себе", value: userData.bio });
+	if (userData.bio) embed.addFields({ name: "Биография:", value: userData.bio });
 
 	return embed;
 }

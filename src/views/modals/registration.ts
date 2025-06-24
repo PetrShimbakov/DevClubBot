@@ -13,6 +13,7 @@ export default function getRoleRegistrationModal(roleId: string, name?: string):
 			.setLabel("Укажите ваше имя (ФИО - по желанию)")
 			.setStyle(TextInputStyle.Short)
 			.setRequired(true)
+			.setMaxLength(50)
 			.setValue(name ?? "")
 	];
 
@@ -23,6 +24,8 @@ export default function getRoleRegistrationModal(roleId: string, name?: string):
 				.setLabel("Ты новичок в этой сфере? (да/нет)")
 				.setStyle(TextInputStyle.Short)
 				.setRequired(true)
+				.setMaxLength(3)
+				.setMinLength(2)
 		);
 	}
 

@@ -50,6 +50,18 @@ class ErrorMessages {
 		content: "Похоже, ты указал нереалистичное имя. Пожалуйста, введи своё настоящее имя — без шуток и случайных символов.",
 		flags: MessageFlags.Ephemeral
 	};
+
+	public readonly notRegistered: InteractionReplyOptions = {
+		content: "Сперва надо зарегистрироваться - нажми кнопку '🏷️ Выбрать свою роль'.",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public tooLongBio(maxValue: number): InteractionReplyOptions {
+		return {
+			content: `Ты написал слишком длинную биографию, допускается не больше ${maxValue} символов.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
 }
 
 const errorMessages = new ErrorMessages();

@@ -29,6 +29,11 @@ class SuccessMessages {
 			flags: MessageFlags.Ephemeral
 		};
 	}
+
+	public readonly bioUpdated: InteractionReplyOptions = {
+		content: "Ваша биография была успешно обновлена.",
+		flags: MessageFlags.Ephemeral
+	};
 }
 
 const successMessages = new SuccessMessages();
