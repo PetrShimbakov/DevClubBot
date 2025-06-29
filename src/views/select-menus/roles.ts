@@ -2,6 +2,7 @@ import { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.
 import config from "../../config";
 import { IUserData } from "../../types/user-data";
 import { ROLE_SELECT_MENU_ID } from "../../constants/component-ids";
+import { detailedRoleLabels } from "../../constants/role-labels";
 
 function getDescription(userData: IUserData | null, roleKey: keyof typeof config.devRoleIds): string {
 	return userData && userData.rolesData.some(role => role.roleId === config.devRoleIds[roleKey])
@@ -9,28 +10,17 @@ function getDescription(userData: IUserData | null, roleKey: keyof typeof config
 		: "✔️ Получить роль";
 }
 
-const roles: { key: keyof typeof config.devRoleIds; label: string }[] = [
-	{ key: "client", label: "Client (Заказчик)" },
-	{ key: "builder", label: "Builder (Строитель)" },
-	{ key: "modeler", label: "Modeler (Моделлер)" },
-	{ key: "scripter", label: "Scripter (Скриптер)" },
-	{ key: "audioSpecialist", label: "Audio Specialist (Аудио специалист)" },
-	{ key: "designer", label: "Designer (Дизайнер)" },
-	{ key: "animator", label: "Animator (Аниматор)" },
-	{ key: "rigger", label: "Rigger (Риггер)" },
-	{ key: "vfxArtist", label: "VFX Artist (VFX-художник)" }
-];
-
+const roleKeys = Object.keys(config.devRoleIds) as (keyof typeof config.devRoleIds)[];
 export default function getRoleSelectMenu(userData?: IUserData) {
-	const roleOptions = roles.map(role => {
-		const emojiId = config.emojiIds[role.key];
-		if (!emojiId) throw new Error(`Emoji ID not found for role key: ${role.key}`);
+	const roleOptions = roleKeys.map(roleKey => {
+		const emojiId = config.emojiIds[roleKey];
+		if (!emojiId) throw new Error(`Emoji ID not found for role key: ${roleKey}`);
 
 		return new StringSelectMenuOptionBuilder()
-			.setLabel(role.label)
-			.setValue(config.devRoleIds[role.key])
+			.setLabel(detailedRoleLabels[roleKey])
+			.setValue(config.devRoleIds[roleKey])
 			.setEmoji({ id: emojiId })
-			.setDescription(getDescription(userData ?? null, role.key));
+			.setDescription(getDescription(userData ?? null, roleKey));
 	});
 
 	return new StringSelectMenuBuilder()

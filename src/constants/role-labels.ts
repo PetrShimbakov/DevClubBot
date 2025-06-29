@@ -12,7 +12,7 @@ export const roleLabels: { [id: (typeof config.devRoleIds)[keyof typeof config.d
 	[config.devRoleIds.vfxArtist]: "VFX Artist"
 };
 
-export const detailedRoleLabels: { [id: string]: string } = {
+export const detailedRoleLabels: Record<keyof typeof config.devRoleIds, string> = {
 	client: "Client (Заказчик)",
 	builder: "Builder (Строитель)",
 	modeler: "Modeler (Моделлер)",
