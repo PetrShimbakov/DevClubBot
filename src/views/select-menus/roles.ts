@@ -15,7 +15,10 @@ const roles: { key: keyof typeof config.devRoleIds; label: string }[] = [
 	{ key: "modeler", label: "Modeler (Моделлер)" },
 	{ key: "scripter", label: "Scripter (Скриптер)" },
 	{ key: "audioSpecialist", label: "Audio Specialist (Аудио специалист)" },
-	{ key: "designer", label: "Designer (Дизайнер)" }
+	{ key: "designer", label: "Designer (Дизайнер)" },
+	{ key: "animator", label: "Animator (Аниматор)" },
+	{ key: "rigger", label: "Rigger (Риггер)" },
+	{ key: "vfxArtist", label: "VFX Artist (VFX-художник)" }
 ];
 
 export default function getRoleSelectMenu(userData?: IUserData) {

@@ -1,17 +1,18 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
 import config from "../../config";
+import { roleLabels } from "../../constants/role-labels";
 
 class SuccessMessages {
 	public roleAdded(roleId: string): InteractionReplyOptions {
 		return {
-			content: `Поздравляю, ты получил новую роль "${config.devRoleLabels[roleId]}"!`,
+			content: `Поздравляю, ты получил новую роль "${roleLabels[roleId]}"!`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
 
 	public roleRemoved(roleId: string): InteractionReplyOptions {
 		return {
-			content: `Ваша роль "${config.devRoleLabels[roleId]}" была удалена.`,
+			content: `Ваша роль "${roleLabels[roleId]}" была удалена.`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
@@ -26,6 +27,13 @@ class SuccessMessages {
 	public rolesSent(channelId: string): InteractionReplyOptions {
 		return {
 			content: `Я успешно отправил авторизацию ролей в указанный вами канал <#${channelId}>.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
+	public orderMenuSent(channelId: string): InteractionReplyOptions {
+		return {
+			content: `Я успешно отправил меню для заказа контента в указанный вами канал <#${channelId}>.`,
 			flags: MessageFlags.Ephemeral
 		};
 	}

@@ -29,16 +29,10 @@ class Config {
 		modeler: getEnvVar("MODELER_ROLE_ID"),
 		scripter: getEnvVar("SCRIPTER_ROLE_ID"),
 		audioSpecialist: getEnvVar("AUDIO_SPECIALIST_ROLE_ID"),
-		designer: getEnvVar("DESIGNER_ROLE_ID")
-	};
-
-	public readonly devRoleLabels: { [id: string]: string } = {
-		[this.devRoleIds.client]: "Client",
-		[this.devRoleIds.builder]: "Builder",
-		[this.devRoleIds.modeler]: "Modeler",
-		[this.devRoleIds.scripter]: "Scripter",
-		[this.devRoleIds.audioSpecialist]: "Audio Specialist",
-		[this.devRoleIds.designer]: "Designer"
+		designer: getEnvVar("DESIGNER_ROLE_ID"),
+		animator: getEnvVar("ANIMATOR_ROLE_ID"),
+		rigger: getEnvVar("RIGGER_ROLE_ID"),
+		vfxArtist: getEnvVar("VFX_ARTIST_ROLE_ID")
 	};
 
 	public readonly roleIds = {
@@ -52,7 +46,10 @@ class Config {
 		modeler: getEnvVar("MODELER_EMOJI_ID"),
 		scripter: getEnvVar("SCRIPTER_EMOJI_ID"),
 		audioSpecialist: getEnvVar("AUDIO_SPECIALIST_EMOJI_ID"),
-		designer: getEnvVar("DESIGNER_EMOJI_ID")
+		designer: getEnvVar("DESIGNER_EMOJI_ID"),
+		animator: getEnvVar("ANIMATOR_EMOJI_ID"),
+		rigger: getEnvVar("RIGGER_EMOJI_ID"),
+		vfxArtist: getEnvVar("VFX_ARTIST_EMOJI_ID")
 	};
 
 	public readonly guildId = getEnvVar("GUILD_ID");

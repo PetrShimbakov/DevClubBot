@@ -5,6 +5,7 @@ import {
 	ROLE_REG_NAME_INPUT_ID,
 	ROLE_REGISTRATION_MODAL_ID
 } from "../../constants/component-ids";
+import { roleLabels } from "../../constants/role-labels";
 
 export default function getRoleRegistrationModal(roleId: string, name?: string): ModalBuilder {
 	const fields: TextInputBuilder[] = [
@@ -33,6 +34,6 @@ export default function getRoleRegistrationModal(roleId: string, name?: string):
 
 	return new ModalBuilder()
 		.setCustomId(ROLE_REGISTRATION_MODAL_ID)
-		.setTitle(`Анкета на роль ${config.devRoleLabels[roleId] ?? "?"}`)
+		.setTitle(`Анкета на роль ${roleLabels[roleId] ?? "?"}`)
 		.addComponents(...actionRows);
 }

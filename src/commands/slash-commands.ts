@@ -4,6 +4,7 @@ import { SlashCommand } from "../types/commands";
 import sendRules from "../controllers/commands/send-rules";
 import sendRoles from "../controllers/commands/send-roles";
 import config from "../config";
+import sendOrderMenu from "../controllers/commands/send-order-menu";
 
 const slashCommands = new CommandsBuilder<SlashCommand>()
 
@@ -32,6 +33,20 @@ const slashCommands = new CommandsBuilder<SlashCommand>()
 					.setRequired(true)
 			),
 		sendRules,
+		[]
+	)
+
+	.addCommand(
+		new SlashCommandBuilder()
+			.setName("send-order-menu")
+			.setDescription("Отошлет меню для заказа контента в указанный канал.")
+			.addChannelOption(
+				new SlashCommandChannelOption()
+					.setName("target-channel")
+					.setDescription("Канал, в который будет отправлено меню.")
+					.setRequired(true)
+			),
+		sendOrderMenu,
 		[]
 	);
 

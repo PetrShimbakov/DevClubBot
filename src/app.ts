@@ -1,7 +1,8 @@
 import config from "./config";
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import { handleInteractions } from "./handlers/interaction-handler";
+import handleInteractions from "./handlers/interaction-handler";
 import { ensureDataBaseIndexes } from "./database/mongo";
+import handleMemberRemove from "./handlers/member-removed-handler";
 import { name as appName } from "../package.json";
 
 async function main() {
@@ -17,11 +18,8 @@ async function main() {
 
 	client.once(Events.ClientReady, () => {
 		handleInteractions(client);
+		handleMemberRemove(client);
 		console.log(`\x1b[32m✅ Bot ${client.user ? client.user.tag : "without a tag"} has successfully logged in!\x1b[0m`);
-	});
-
-	client.on(Events.GuildMemberRemove, member => {
-		console.log(`${member.user.tag} left us.`);
 	});
 
 	client.login(config.bot.token);

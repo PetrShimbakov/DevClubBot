@@ -4,7 +4,7 @@ import { handleRoleSelectButton } from "../controllers/roles-controller";
 import { ROLE_SELECT_BUTTON_ID, UPDATE_BIO_BUTTON_ID, UPDATE_BIO_MODAL_ID } from "../constants/component-ids";
 import { handleUpdateBioButton, handleUpdateBioModal } from "../controllers/bio-update-controller";
 
-export function handleInteractions(client: Client) {
+export default function handleInteractions(client: Client) {
 	client.on(Events.InteractionCreate, interaction => {
 		if (!interaction.inCachedGuild()) return;
 		if (!interaction.member) return; // Recommendation from community.

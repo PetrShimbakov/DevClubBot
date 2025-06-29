@@ -1,6 +1,7 @@
 import { EmbedBuilder, User } from "discord.js";
 import config from "../../config";
 import { IUserData } from "../../types/user-data";
+import { roleLabels } from "../../constants/role-labels";
 
 export default function getUserInfoEmbed(userData: IUserData, user: User): EmbedBuilder {
 	const roleDescription = userData.rolesData
@@ -8,7 +9,7 @@ export default function getUserInfoEmbed(userData: IUserData, user: User): Embed
 			(role, index, roles) =>
 				`${index === 0 ? "" : index === roles.length - 1 ? " и" : ","}${
 					role.roleId === config.devRoleIds.client ? "" : role.beginner ? " начинающий" : " опытный"
-				} ${config.devRoleLabels[role.roleId]}`
+				} ${roleLabels[role.roleId]}`
 		)
 		.join("");
 

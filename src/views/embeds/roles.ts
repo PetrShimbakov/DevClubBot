@@ -1,5 +1,20 @@
 import { EmbedBuilder } from "discord.js";
 import config from "../../config";
+import { detailedRoleLabels } from "../../constants/role-labels";
+
+function getRoleHeading(role: keyof typeof config.devRoleIds): string {
+	const emojiId = config.emojiIds[role];
+	const label = detailedRoleLabels[role];
+
+	if (!emojiId || !label) {
+		const missing = [!emojiId ? "emoji ID (config.emojiIds)" : null, !label ? "role label (detailedRoleLabels)" : null]
+			.filter(Boolean)
+			.join(" and ");
+		throw new Error(`[config] Missing ${missing} for role '${role}'. Please check your configuration.`);
+	}
+
+	return `<:emoji:${emojiId}> ${label}`;
+}
 
 const rolesEmbed = new EmbedBuilder()
 
@@ -15,30 +30,43 @@ const rolesEmbed = new EmbedBuilder()
 	})
 	.addFields(
 		{
-			name: `<:Client:${config.emojiIds.client}> Client (Заказчик)`,
+			name: getRoleHeading("client"),
 			value:
 				"Есть идея для игры? Закажи её разработку у нас. Заказчик формулирует требования и работает с командой для реализации проекта."
 		},
 		{
-			name: `<:Builder:${config.emojiIds.builder}> Builder (Строитель)`,
+			name: getRoleHeading("builder"),
 			value: "Создаёт уровни и локации в Roblox Studio, проектируя карты и размещая объекты для увлекательной игры."
 		},
 		{
-			name: `<:Modeler:${config.emojiIds.modeler}> Modeler (Моделлер)`,
+			name: getRoleHeading("modeler"),
 			value: "Создаёт 3D-объекты и текстуры в Blender или 3ds Max, создает персонажей, предметы и другие игровые элементы."
 		},
 		{
-			name: `<:Scripter:${config.emojiIds.scripter}> Scripter (Скриптер)`,
+			name: getRoleHeading("scripter"),
 			value: "Программирует функциональность игры, создавая код для управления действиями и взаимодействиями в игре."
 		},
 		{
-			name: `<:AudioSpecialist:${config.emojiIds.audioSpecialist}> Audio Specialist (Аудио специалист)`,
+			name: getRoleHeading("audioSpecialist"),
 			value: "Создаёт музыку и/или разрабатывает звуковые эффекты."
 		},
 		{
-			name: `<:Designer:${config.emojiIds.designer}> Designer (Дизайнер)`,
+			name: getRoleHeading("designer"),
 			value:
 				"Разрабатывает визуальные элементы интерфейса, иконки и общее оформление игры, обеспечивая привлекательный и удобный пользовательский опыт."
+		},
+		{
+			name: getRoleHeading("animator"),
+			value: "Создаёт анимации персонажей, объектов и интерфейса для воплощения движения и жизни в игре."
+		},
+		{
+			name: getRoleHeading("vfxArtist"),
+			value: "Разрабатывает визуальные эффекты — от магии и взрывов до погодных явлений и спецэффектов интерфейса."
+		},
+		{
+			name: getRoleHeading("rigger"),
+			value:
+				"Настраивает 3D-модели персонажей и объектов для анимаций — добавляет кости, риг и обеспечивает правильный импорт в Roblox Studio."
 		}
 	);
 
