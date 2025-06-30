@@ -37,7 +37,9 @@ class Config {
 
 	public readonly roleIds = {
 		everyone: getEnvVar("EVERYONE_ROLE_ID"),
-		administrator: getEnvVar("ADMINISTRATOR_ROLE_ID")
+		administrator: getEnvVar("ADMINISTRATOR_ROLE_ID"),
+		booster: getEnvVar("BOOSTER_ROLE_ID"),
+		superClient: getEnvVar("SUPER_CLIENT_ROLE_ID")
 	};
 
 	public readonly emojiIds = {

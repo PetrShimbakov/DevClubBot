@@ -2,6 +2,7 @@ import { EmbedBuilder, User } from "discord.js";
 import config from "../../config";
 import { IUserData } from "../../types/user-data";
 import { roleLabels } from "../../constants/role-labels";
+import { getDiscordDate } from "../../utils/message-utils";
 
 export default function getUserInfoEmbed(userData: IUserData, user: User): EmbedBuilder {
 	const roleDescription = userData.rolesData
@@ -19,9 +20,9 @@ export default function getUserInfoEmbed(userData: IUserData, user: User): Embed
 		.setColor("#816CE0")
 		.setTimestamp()
 		.setDescription(
-			`Зовут ${userData.name}, зарегистрирован с момента <t:${Math.floor(
-				new Date(userData.createdAt).getTime() / 1000
-			)}:D>. ${roleDescription ? `Это ${roleDescription}.` : "Пока без ролей."}`
+			`Зовут ${userData.name}, зарегистрирован с момента ${getDiscordDate(userData.createdAt)}. ${
+				roleDescription ? `Это ${roleDescription}.` : "Пока без ролей."
+			}`
 		);
 
 	if (userData.bio) embed.addFields({ name: "Биография:", value: userData.bio });

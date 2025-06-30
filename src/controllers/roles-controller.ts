@@ -1,4 +1,4 @@
-import { ButtonInteraction, ComponentType, StringSelectMenuInteraction } from "discord.js";
+import { ButtonInteraction, ComponentType } from "discord.js";
 import { safeReply } from "../utils/reply-utils";
 import errorMessages from "../views/messages/error-messages";
 import messages from "../views/messages/messages";
@@ -16,12 +16,12 @@ import {
 const activeRegistrations = new Set<string>();
 const INTERACTION_TIMEOUT = 30_000;
 
-export async function handleRoleSelectButton(initialInteraction: ButtonInteraction<"cached">) {
+export async function handleRoleSelectButton(initialInteraction: ButtonInteraction<"cached">): Promise<void> {
 	const userId = initialInteraction.user.id;
 	const member = initialInteraction.member;
 	const userData = await usersData.getUser(userId);
 
-	if (!member) return; // recommendation from community
+	if (!member) return safeReply(initialInteraction, errorMessages.unknown); // recommendation from community
 	if (activeRegistrations.has(userId)) return safeReply(initialInteraction, errorMessages.tooManyRequests);
 	activeRegistrations.add(userId);
 
@@ -42,7 +42,6 @@ export async function handleRoleSelectButton(initialInteraction: ButtonInteracti
 			throw error;
 		}
 
-		if (!roleSelectInteraction) return;
 		const selectedRoleId = roleSelectInteraction.values[0];
 
 		if (!Object.values(config.devRoleIds).includes(selectedRoleId)) {
@@ -59,7 +58,7 @@ export async function handleRoleSelectButton(initialInteraction: ButtonInteracti
 		let modalInteraction;
 		try {
 			await roleSelectInteraction.showModal(getRoleRegistrationModal(roleSelectInteraction.values[0], userData?.name));
-			initialInteraction.deleteReply();
+			await initialInteraction.deleteReply();
 			modalInteraction = await roleSelectInteraction.awaitModalSubmit({
 				filter: i => i.user.id === userId && i.customId === ROLE_REGISTRATION_MODAL_ID,
 				time: INTERACTION_TIMEOUT
@@ -71,10 +70,9 @@ export async function handleRoleSelectButton(initialInteraction: ButtonInteracti
 			throw error;
 		}
 
-		if (!modalInteraction) return;
-		const selectedName = modalInteraction.fields.getTextInputValue(ROLE_REG_NAME_INPUT_ID);
+		const selectedName = modalInteraction.fields.getTextInputValue(ROLE_REG_NAME_INPUT_ID).trim();
 
-		if (!selectedName.trim() || selectedName.length >= 50) return safeReply(modalInteraction, errorMessages.unrealName);
+		if (!selectedName || selectedName.length >= 50) return safeReply(modalInteraction, errorMessages.unrealName);
 
 		if (!userData) await usersData.addUser(userId, selectedName);
 

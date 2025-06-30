@@ -38,8 +38,20 @@ class SuccessMessages {
 		};
 	}
 
+	public orderRemoved(orderNumber: number): InteractionReplyOptions {
+		return {
+			content: `Я успешно отменил ваш заказ под номером ${orderNumber}.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
 	public readonly bioUpdated: InteractionReplyOptions = {
 		content: "Ваша биография была успешно обновлена.",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly ordered: InteractionReplyOptions = {
+		content: "Ваш заказ принят, ожидайте дальнейших уведомлений.",
 		flags: MessageFlags.Ephemeral
 	};
 }
