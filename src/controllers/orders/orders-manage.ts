@@ -17,7 +17,7 @@ import { getOrderModal } from "../../views/modals/orders/orders-manage";
 import { sendOrder } from "./orders-work";
 
 const pendingOrderUsers = new Set<string>();
-const INTERACTION_TIMEOUT = 30_000;
+const INTERACTION_TIMEOUT = 120_000;
 
 export async function handleCreateOrderButton(initialInteraction: ButtonInteraction<"cached">): Promise<void> {
 	const userId = initialInteraction.user.id;
@@ -78,6 +78,7 @@ export async function handleCreateOrderButton(initialInteraction: ButtonInteract
 
 		await ordersData.addOrder(selectedOrderType, userId, orderDescription, orderBudget);
 		await safeReply(modalInteraction, successMessages.ordered);
+		sendOrder(selectedOrderType);
 	} catch (error) {
 		console.error(`[orders-controller] Unknown error for user ${userId}:`, error);
 		return safeReply(initialInteraction, errorMessages.unknown);
