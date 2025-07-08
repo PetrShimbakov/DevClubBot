@@ -1,10 +1,16 @@
 import { CommandsBuilder } from "./commands-builder";
-import { SlashCommandChannelOption, SlashCommandBuilder } from "discord.js";
+import {
+	SlashCommandChannelOption,
+	SlashCommandBuilder,
+	SlashCommandIntegerOption,
+	SlashCommandNumberOption
+} from "discord.js";
 import { SlashCommand } from "../types/commands";
 import sendRules from "../controllers/commands/send-rules";
 import sendRoles from "../controllers/commands/send-roles";
 import config from "../config";
 import sendOrderMenu from "../controllers/commands/send-order-menu";
+import clearChat from "../controllers/commands/clear-chat";
 
 const slashCommands = new CommandsBuilder<SlashCommand>()
 
@@ -47,6 +53,23 @@ const slashCommands = new CommandsBuilder<SlashCommand>()
 					.setRequired(true)
 			),
 		sendOrderMenu,
+		[]
+	)
+
+	.addCommand(
+		new SlashCommandBuilder()
+			.setName("clear")
+			.setDescription("Удаляет указанное количество последних сообщений в этом канале.")
+			.addNumberOption(
+				new SlashCommandNumberOption()
+					.setName("amount")
+					.setDescription("Сколько сообщений удалить.")
+					.setRequired(true)
+					.setMaxValue(100)
+					.setMinValue(1)
+			),
+
+		clearChat,
 		[]
 	);
 

@@ -45,6 +45,13 @@ class SuccessMessages {
 		};
 	}
 
+	public messagesCleared(amount: number): InteractionReplyOptions {
+		return {
+			content: `Я успешно удалил ${amount} последних сообщений в этом канале.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
 	public readonly bioUpdated: InteractionReplyOptions = {
 		content: "Ваша биография была успешно обновлена.",
 		flags: MessageFlags.Ephemeral
