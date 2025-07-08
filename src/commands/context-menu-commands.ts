@@ -5,8 +5,7 @@ import {
 	ApplicationCommandType,
 	UserContextMenuCommandInteraction,
 	ContextMenuCommandInteraction,
-	MessageContextMenuCommandInteraction,
-	PermissionFlagsBits
+	MessageContextMenuCommandInteraction
 } from "discord.js";
 import { ContextMenuCommand } from "../types/commands";
 import sendUserInfo from "../controllers/commands/user-info";
@@ -29,7 +28,7 @@ const contextMenuCommands = new CommandsBuilder<ContextMenuCommand>().addCommand
 		if (!isUserContextMenu(interaction)) return;
 		await sendUserInfo(interaction);
 	},
-	[config.roleIds.everyone]
+	Object.values(config.devRoleIds)
 );
 
 export default contextMenuCommands;

@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "../../config";
 
 export const roleOrderLimits: Record<string, number> = {
 	[config.roleIds.administrator]: 10,

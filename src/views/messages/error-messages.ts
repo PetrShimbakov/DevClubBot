@@ -1,5 +1,5 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
-import { roleOrderLimits } from "../../constants/order-limits";
+import { roleOrderLimits } from "../../constants/orders/order-limits";
 import config from "../../config";
 
 class ErrorMessages {
@@ -25,6 +25,11 @@ class ErrorMessages {
 
 	public readonly timeLimit: InteractionReplyOptions = {
 		content: "Время на заполнение анкеты истекло. Пока ты думал, мой процессор успел остынуть. 🥶",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly orderListInactivity: InteractionReplyOptions = {
+		content: "Ты долго не был активен, поэтому я закрыл меню заказов. Но не переживай — всегда можешь открыть его снова! 🥶",
 		flags: MessageFlags.Ephemeral
 	};
 
@@ -58,8 +63,13 @@ class ErrorMessages {
 		flags: MessageFlags.Ephemeral
 	};
 
-	public readonly ordersNotFound: InteractionReplyOptions = {
+	public readonly myOrdersNotFound: InteractionReplyOptions = {
 		content: "Ты пока ничего не заказывал.",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly availableOrdersNotFound: InteractionReplyOptions = {
+		content: "Увы, сейчас для твоих ролей нет свободных заказов. Попробуй зайти позже.",
 		flags: MessageFlags.Ephemeral
 	};
 

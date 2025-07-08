@@ -10,21 +10,20 @@ class OrdersData {
 		return this._collection ?? (this._collection = (await getDataBase()).collection<OrderData>(ORDERS_COLLECTION));
 	}
 
-	public async addOrder(
-		type: OrderType,
-		orderNumber: number,
-		userDiscordId: string,
-		description: string,
-		budget: string
-	): Promise<void> {
+	public async addOrder(type: OrderType, userDiscordId: string, description: string, budget: string): Promise<void> {
 		const collection = await this.getCollection();
+
+		const lastOrder = await collection.find({ userDiscordId }).sort({ orderNumber: -1 }).limit(1).next();
+
+		const nextOrderNumber = lastOrder ? lastOrder.orderNumber + 1 : 1;
+
 		try {
 			await collection.insertOne({
 				type,
 				userDiscordId,
 				description,
 				budget,
-				orderNumber,
+				orderNumber: nextOrderNumber,
 				createdAt: new Date(),
 				isTaken: false
 			});

@@ -1,8 +1,9 @@
 import { Client, Events } from "discord.js";
 import usersData from "../models/users-data";
 import ordersData from "../models/orders-data";
+import client from "../client";
 
-export default function handleMemberRemove(client: Client) {
+export default function handleMemberRemove() {
 	client.on(Events.GuildMemberRemove, async member => {
 		const userId = member.user.id;
 

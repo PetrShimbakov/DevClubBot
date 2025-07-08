@@ -1,6 +1,7 @@
-import { Client, Events } from "discord.js";
-import { handleCommand } from "../controllers/commands-controller";
-import { handleRoleSelectButton } from "../controllers/roles-controller";
+import { VIEW_ORDERS_LIST_BUTTON_ID } from "./../constants/component-ids";
+import { Events } from "discord.js";
+import { handleCommand } from "../controllers/commands";
+import { handleRoleSelectButton } from "../controllers/roles";
 import {
 	CREATE_ORDER_BUTTON_ID,
 	REMOVE_ORDER_BUTTON_ID,
@@ -9,14 +10,16 @@ import {
 	UPDATE_BIO_MODAL_ID,
 	VIEW_MY_ORDERS_BUTTON_ID
 } from "../constants/component-ids";
-import { handleUpdateBioButton, handleUpdateBioModal } from "../controllers/bio-update-controller";
+import { handleUpdateBioButton, handleUpdateBioModal } from "../controllers/bio-update";
 import {
 	handleCreateOrderButton,
 	handleRemoveOrderButton,
 	handleViewMyOrdersButton
-} from "../controllers/orders-controller";
+} from "../controllers/orders/orders-manage";
+import client from "../client";
+import { handleViewOrdersListButton } from "../controllers/orders/orders-work";
 
-export default function handleInteractions(client: Client) {
+export default function handleInteractions() {
 	client.on(Events.InteractionCreate, interaction => {
 		if (!interaction.inCachedGuild()) return;
 		if (!interaction.member) return; // Recommendation from community.
@@ -36,6 +39,9 @@ export default function handleInteractions(client: Client) {
 					return handleCreateOrderButton(interaction);
 				case VIEW_MY_ORDERS_BUTTON_ID:
 					return handleViewMyOrdersButton(interaction);
+				case VIEW_ORDERS_LIST_BUTTON_ID:
+					return handleViewOrdersListButton(interaction);
+
 				default:
 					if (interaction.customId.startsWith(REMOVE_ORDER_BUTTON_ID)) return handleRemoveOrderButton(interaction);
 					break;

@@ -1,19 +1,20 @@
 import { ButtonInteraction, ComponentType } from "discord.js";
-import { safeReply } from "../utils/reply-utils";
-import errorMessages from "../views/messages/error-messages";
-import messages from "../views/messages/messages";
-import successMessages from "../views/messages/success-messages";
+import { safeReply } from "../../utils/reply-utils";
+import errorMessages from "../../views/messages/error-messages";
+import messages from "../../views/messages/messages";
+import successMessages from "../../views/messages/success-messages";
 import {
 	ORDER_BUDGET_INPUT_ID,
 	ORDER_DESCRIPTION_INPUT_ID,
 	ORDER_MODAL_ID,
 	ORDER_TYPE_SELECT_MENU_ID,
 	REMOVE_ORDER_BUTTON_ID
-} from "../constants/component-ids";
-import { OrderType } from "../types/order";
-import getOrderModal from "../views/modals/order";
-import ordersData from "../models/orders-data";
-import { roleOrderLimits } from "../constants/order-limits";
+} from "../../constants/component-ids";
+import { OrderType } from "../../types/order";
+import ordersData from "../../models/orders-data";
+import { roleOrderLimits } from "../../constants/orders/order-limits";
+import { getOrderModal } from "../../views/modals/orders/orders-manage";
+import { sendOrder } from "./orders-work";
 
 const pendingOrderUsers = new Set<string>();
 const INTERACTION_TIMEOUT = 30_000;
@@ -75,7 +76,7 @@ export async function handleCreateOrderButton(initialInteraction: ButtonInteract
 		if (orderDescription.length > 300) return safeReply(modalInteraction, errorMessages.tooLongOrderDescription(300));
 		if (orderBudget.length > 50) return safeReply(modalInteraction, errorMessages.tooLongOrderBudget(50));
 
-		await ordersData.addOrder(selectedOrderType, userOrdersQty + 1, userId, orderDescription, orderBudget);
+		await ordersData.addOrder(selectedOrderType, userId, orderDescription, orderBudget);
 		await safeReply(modalInteraction, successMessages.ordered);
 	} catch (error) {
 		console.error(`[orders-controller] Unknown error for user ${userId}:`, error);
@@ -88,7 +89,7 @@ export async function handleCreateOrderButton(initialInteraction: ButtonInteract
 export async function handleViewMyOrdersButton(interaction: ButtonInteraction<"cached">): Promise<void> {
 	try {
 		const orders = await ordersData.getOrders(interaction.user.id);
-		if (orders.length < 1) return safeReply(interaction, errorMessages.ordersNotFound);
+		if (orders.length < 1) return safeReply(interaction, errorMessages.myOrdersNotFound);
 		for (const order of orders) await safeReply(interaction, messages.orderInfo(order));
 	} catch (error) {
 		console.error(`[orders-controller] Unknown error for user ${interaction.user.id}:`, error);

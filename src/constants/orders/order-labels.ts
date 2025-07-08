@@ -1,4 +1,4 @@
-import { OrderType } from "../types/order";
+import { OrderType } from "../../types/order";
 
 export const orderLabels: Record<OrderType, string> = {
 	[OrderType.Game]: "Игра целиком",

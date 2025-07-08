@@ -18,6 +18,11 @@ class Config {
 		id: getEnvVar("CLIENT_ID")
 	};
 
+	public readonly channels = {
+		ordersList: getEnvVar("ORDERS_LIST_CHANNEL_ID"),
+		supportLog: getEnvVar("SUPPORT_LOG_CHANNEL_ID")
+	};
+
 	public readonly imageUrls = {
 		logo: getEnvVar("LOGO"),
 		banner: getEnvVar("BANNER")
