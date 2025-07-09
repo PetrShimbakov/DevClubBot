@@ -9,7 +9,6 @@ import client from "./client";
 async function main() {
 	console.log(`🚀 Application ${appName} is starting up...`);
 
-	// TODO
 	if (process.env.npm_lifecycle_event == "dev")
 		console.log("\x1b[31m❗️ Don't forget to check types with the compiler!\x1b[0m");
 

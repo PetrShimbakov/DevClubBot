@@ -4,21 +4,25 @@ import errorMessages from "../../views/messages/error-messages";
 import messages from "../../views/messages/messages";
 import successMessages from "../../views/messages/success-messages";
 import {
+	MY_ORDERS_LIST_NEXT_BUTTON_ID,
+	MY_ORDERS_LIST_PREV_BUTTON_ID,
+	MY_ORDERS_LIST_REMOVE_BUTTON_ID,
 	ORDER_BUDGET_INPUT_ID,
 	ORDER_DESCRIPTION_INPUT_ID,
 	ORDER_MODAL_ID,
-	ORDER_TYPE_SELECT_MENU_ID,
-	REMOVE_ORDER_BUTTON_ID
+	ORDER_TYPE_SELECT_MENU_ID
 } from "../../constants/component-ids";
 import { OrderType } from "../../types/order";
 import ordersData from "../../models/orders-data";
 import { roleOrderLimits } from "../../constants/orders/order-limits";
 import { getOrderModal } from "../../views/modals/orders/orders-manage";
 import { sendOrder } from "./orders-work";
+import { MY_ORDERS_LIST_TIMEOUT, ORDER_CREATION_TIMEOUT } from "../../constants/timeouts";
+import { awaitWithAbort } from "../../utils/await-utils";
+import { deleteMsgFlags } from "../../utils/message-utils";
+import { getNextPage, getPrevPage } from "../../utils/page-utils";
 
 const pendingOrderUsers = new Set<string>();
-const INTERACTION_TIMEOUT = 120_000;
-
 export async function handleCreateOrderButton(initialInteraction: ButtonInteraction<"cached">): Promise<void> {
 	const userId = initialInteraction.user.id;
 	const member = initialInteraction.member;
@@ -40,7 +44,7 @@ export async function handleCreateOrderButton(initialInteraction: ButtonInteract
 			selectMenuInteraction = await message.awaitMessageComponent({
 				filter: i => i.user.id === userId && i.customId === ORDER_TYPE_SELECT_MENU_ID,
 				componentType: ComponentType.StringSelect,
-				time: INTERACTION_TIMEOUT
+				time: ORDER_CREATION_TIMEOUT
 			});
 		} catch (error) {
 			if (error instanceof Error && "code" in error && error.code === "InteractionCollectorError") {
@@ -58,10 +62,10 @@ export async function handleCreateOrderButton(initialInteraction: ButtonInteract
 		let modalInteraction;
 		try {
 			await selectMenuInteraction.showModal(getOrderModal(selectedOrderType));
-			await initialInteraction.deleteReply();
+			await initialInteraction.deleteReply().catch();
 			modalInteraction = await selectMenuInteraction.awaitModalSubmit({
 				filter: i => i.user.id === userId && i.customId === ORDER_MODAL_ID,
-				time: INTERACTION_TIMEOUT
+				time: ORDER_CREATION_TIMEOUT
 			});
 		} catch (error) {
 			if (error instanceof Error && "code" in error && error.code === "InteractionCollectorError") {
@@ -87,27 +91,66 @@ export async function handleCreateOrderButton(initialInteraction: ButtonInteract
 	}
 }
 
-export async function handleViewMyOrdersButton(interaction: ButtonInteraction<"cached">): Promise<void> {
-	try {
-		const orders = await ordersData.getOrders(interaction.user.id);
-		if (orders.length < 1) return safeReply(interaction, errorMessages.myOrdersNotFound);
-		for (const order of orders) await safeReply(interaction, messages.orderInfo(order));
-	} catch (error) {
-		console.error(`[orders-controller] Unknown error for user ${interaction.user.id}:`, error);
-		return safeReply(interaction, errorMessages.unknown);
-	}
-}
+const abortControllers = new Map<string, AbortController>();
+export async function handleViewMyOrdersListButton(interaction: ButtonInteraction<"cached">): Promise<void> {
+	const ALLOWED_BUTTON_IDS = [MY_ORDERS_LIST_PREV_BUTTON_ID, MY_ORDERS_LIST_NEXT_BUTTON_ID, MY_ORDERS_LIST_REMOVE_BUTTON_ID];
+	const userId = interaction.user.id;
 
-export async function handleRemoveOrderButton(interaction: ButtonInteraction<"cached">): Promise<void> {
-	try {
-		const orderNumber = parseInt(interaction.customId.replace(REMOVE_ORDER_BUTTON_ID, ""));
-		if (!(await ordersData.hasOrder(interaction.user.id, orderNumber)))
-			return safeReply(interaction, errorMessages.orderAlreadyDeleted);
-		await ordersData.removeOrder(interaction.user.id, orderNumber);
+	if (abortControllers.has(userId)) abortControllers.get(userId)!.abort();
 
-		safeReply(interaction, successMessages.orderRemoved(orderNumber));
+	const abortController = new AbortController();
+	abortControllers.set(userId, abortController);
+
+	try {
+		const orders = await ordersData.getOrders(userId);
+		const ordersQty = orders.length;
+		let currentPage = 1;
+
+		if (ordersQty === 0) return safeReply(interaction, errorMessages.myOrdersNotFound);
+
+		await interaction.reply(messages.myOrdersList(orders[currentPage - 1], currentPage, ordersQty));
+		const message = await interaction.fetchReply();
+
+		while (true) {
+			const buttonInteraction = await awaitWithAbort(
+				message.awaitMessageComponent({
+					filter: i => i.user.id === userId && ALLOWED_BUTTON_IDS.some(cId => cId === i.customId),
+					componentType: ComponentType.Button,
+					time: MY_ORDERS_LIST_TIMEOUT
+				}),
+				abortController
+			).catch(error => {
+				if (error.code === "InteractionCollectorError") {
+					interaction.deleteReply().catch();
+					return safeReply(interaction, errorMessages.orderListInactivity);
+				}
+				if (error.message === "abort") return interaction.deleteReply();
+				throw error;
+			});
+
+			if (!buttonInteraction) return;
+			if (!(buttonInteraction instanceof ButtonInteraction)) return;
+
+			switch (buttonInteraction.customId) {
+				case MY_ORDERS_LIST_REMOVE_BUTTON_ID:
+					const orderNumber = orders[currentPage - 1].orderNumber;
+					await ordersData.removeOrder(userId, orderNumber);
+					await safeReply(interaction, successMessages.orderRemoved(orderNumber));
+					return await interaction.deleteReply().catch();
+				case MY_ORDERS_LIST_PREV_BUTTON_ID:
+				case MY_ORDERS_LIST_NEXT_BUTTON_ID:
+					currentPage =
+						buttonInteraction.customId === MY_ORDERS_LIST_PREV_BUTTON_ID
+							? getPrevPage(currentPage, ordersQty)
+							: getNextPage(currentPage, ordersQty);
+					const message = deleteMsgFlags(messages.myOrdersList(orders[currentPage - 1], currentPage, ordersQty)); // Remove 'flags' to prevent Discord API error on update
+					await buttonInteraction.update(message);
+			}
+		}
 	} catch (error) {
-		console.error(`[orders-controller] Unknown error for user ${interaction.user.id}:`, error);
+		console.error(`[orders-work-controller] Unknown error for user ${userId}:`, error);
 		return safeReply(interaction, errorMessages.unknown);
+	} finally {
+		if (abortControllers.get(userId) === abortController) abortControllers.delete(userId);
 	}
 }

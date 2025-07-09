@@ -73,11 +73,6 @@ class ErrorMessages {
 		flags: MessageFlags.Ephemeral
 	};
 
-	public readonly orderAlreadyDeleted: InteractionReplyOptions = {
-		content: "Этот заказ уже был удален.",
-		flags: MessageFlags.Ephemeral
-	};
-
 	public tooLongBio(maxValue: number): InteractionReplyOptions {
 		return {
 			content: `Ты написал слишком длинную биографию, допускается не больше ${maxValue} символов.`,

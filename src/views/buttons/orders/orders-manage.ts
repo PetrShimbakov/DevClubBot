@@ -1,5 +1,11 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import { CREATE_ORDER_BUTTON_ID, VIEW_MY_ORDERS_BUTTON_ID, REMOVE_ORDER_BUTTON_ID } from "../../../constants/component-ids";
+import {
+	CREATE_ORDER_BUTTON_ID,
+	VIEW_MY_ORDERS_BUTTON_ID,
+	MY_ORDERS_LIST_PREV_BUTTON_ID,
+	MY_ORDERS_LIST_REMOVE_BUTTON_ID,
+	MY_ORDERS_LIST_NEXT_BUTTON_ID
+} from "../../../constants/component-ids";
 
 export const orderMenuButtons = new ActionRowBuilder().addComponents(
 	new ButtonBuilder()
@@ -14,10 +20,12 @@ export const orderMenuButtons = new ActionRowBuilder().addComponents(
 		.setStyle(ButtonStyle.Secondary)
 );
 
-export default function getRemoveOrderButton(orderNumber: number) {
-	return new ButtonBuilder()
+export const myOrdersListButtons = new ActionRowBuilder().addComponents(
+	new ButtonBuilder().setEmoji("⬅️").setCustomId(MY_ORDERS_LIST_PREV_BUTTON_ID).setStyle(ButtonStyle.Primary),
+	new ButtonBuilder()
 		.setLabel("Отменить заказ")
 		.setEmoji("🗑️")
-		.setCustomId(REMOVE_ORDER_BUTTON_ID + orderNumber)
-		.setStyle(ButtonStyle.Danger);
-}
+		.setCustomId(MY_ORDERS_LIST_REMOVE_BUTTON_ID)
+		.setStyle(ButtonStyle.Danger),
+	new ButtonBuilder().setEmoji("➡️").setCustomId(MY_ORDERS_LIST_NEXT_BUTTON_ID).setStyle(ButtonStyle.Primary)
+);

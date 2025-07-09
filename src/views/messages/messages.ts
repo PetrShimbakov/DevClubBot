@@ -2,12 +2,12 @@ import { ActionRowBuilder, InteractionReplyOptions, MessageCreateOptions, Messag
 import { IUserData } from "../../types/user-data";
 import getRoleSelectMenu from "../select-menus/roles";
 import { OrderData, OrderType } from "../../types/order";
-import getRemoveOrderButton from "../buttons/orders/orders-manage";
-import getOrderInfoEmbed from "../embeds/orders/orders-manage";
 import { getOrdersListEmbed } from "../embeds/orders/orders-work";
 import { ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
 import { getOrderTypeSelectMenu } from "../select-menus/orders/orders-manage";
 import { orderRoles } from "../../constants/orders/order-roles";
+import { myOrdersListButtons } from "../buttons/orders/orders-manage";
+import { getMyOrdersListEmbed } from "../embeds/orders/orders-manage";
 
 class Messages {
 	public roleSelection(userId: string, userData?: IUserData): InteractionReplyOptions {
@@ -28,18 +28,18 @@ class Messages {
 		};
 	}
 
-	public orderInfo(orderData: OrderData): InteractionReplyOptions {
-		return {
-			components: [new ActionRowBuilder().addComponents(getRemoveOrderButton(orderData.orderNumber)).toJSON()],
-			embeds: [getOrderInfoEmbed(orderData)],
-			flags: MessageFlags.Ephemeral
-		};
-	}
-
 	public ordersList(orderData: OrderData, currentPage: number, pagesQty: number): InteractionReplyOptions {
 		return {
 			components: [ordersListButtons.toJSON()],
 			embeds: [getOrdersListEmbed(orderData, currentPage, pagesQty)],
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
+	public myOrdersList(orderData: OrderData, currentPage: number, pagesQty: number): InteractionReplyOptions {
+		return {
+			components: [myOrdersListButtons.toJSON()],
+			embeds: [getMyOrdersListEmbed(orderData, currentPage, pagesQty)],
 			flags: MessageFlags.Ephemeral
 		};
 	}

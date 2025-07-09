@@ -13,9 +13,9 @@ import {
 	ORDERS_LIST_TAKE_BUTTON_ID
 } from "../../constants/component-ids";
 import { awaitWithAbort } from "../../utils/await-utils";
-
-const abortControllers = new Map<string, AbortController>();
-const INTERACTION_TIMEOUT = 300_000;
+import { ORDERS_LIST_TIMEOUT } from "../../constants/timeouts";
+import { getNextPage, getPrevPage } from "../../utils/page-utils";
+import { deleteMsgFlags } from "../../utils/message-utils";
 
 export async function sendOrder(orderType: OrderType) {
 	try {
@@ -29,9 +29,9 @@ export async function sendOrder(orderType: OrderType) {
 	}
 }
 
+const abortControllers = new Map<string, AbortController>();
 export async function handleViewOrdersListButton(interaction: ButtonInteraction<"cached">) {
 	const ALLOWED_BUTTON_IDS = [ORDERS_LIST_PREV_BUTTON_ID, ORDERS_LIST_NEXT_BUTTON_ID, ORDERS_LIST_TAKE_BUTTON_ID];
-
 	const userId = interaction.user.id;
 
 	if (abortControllers.has(userId)) abortControllers.get(userId)!.abort();
@@ -43,20 +43,20 @@ export async function handleViewOrdersListButton(interaction: ButtonInteraction<
 		const orders = await ordersData.getOrders();
 		const userRoles = interaction.member.roles.cache;
 		const availableOrders = orders.filter(order => orderRoles[order.type].some(roleId => userRoles.has(roleId)));
-
+		const ordersQty = availableOrders.length;
 		let currentPage = 1;
 
-		if (availableOrders.length === 0) return safeReply(interaction, errorMessages.availableOrdersNotFound);
+		if (ordersQty === 0) return safeReply(interaction, errorMessages.availableOrdersNotFound);
 
-		await interaction.reply(messages.ordersList(availableOrders[currentPage - 1], currentPage, availableOrders.length));
+		await interaction.reply(messages.ordersList(availableOrders[currentPage - 1], currentPage, ordersQty));
 		const message = await interaction.fetchReply();
 
 		while (true) {
 			const buttonInteraction = await awaitWithAbort(
 				message.awaitMessageComponent({
-					filter: i => i.user.id === interaction.user.id && ALLOWED_BUTTON_IDS.some(cId => cId === i.customId),
+					filter: i => i.user.id === userId && ALLOWED_BUTTON_IDS.some(cId => cId === i.customId),
 					componentType: ComponentType.Button,
-					time: INTERACTION_TIMEOUT
+					time: ORDERS_LIST_TIMEOUT
 				}),
 				abortController
 			).catch(error => {
@@ -73,38 +73,20 @@ export async function handleViewOrdersListButton(interaction: ButtonInteraction<
 
 			switch (buttonInteraction.customId) {
 				case ORDERS_LIST_TAKE_BUTTON_ID:
+					// TODO: implement take order button.
 					break;
-				case ORDERS_LIST_PREV_BUTTON_ID: {
-					if (currentPage <= 1) currentPage = availableOrders.length;
-					else currentPage -= 1;
-
-					const { flags, ...orderListMsg } = messages.ordersList(
-						availableOrders[currentPage - 1],
-						currentPage,
-						availableOrders.length
-					);
-
-					await buttonInteraction.update(orderListMsg);
-					break;
-				}
+				case ORDERS_LIST_PREV_BUTTON_ID:
 				case ORDERS_LIST_NEXT_BUTTON_ID:
-					if (currentPage === availableOrders.length) currentPage = 1;
-					else currentPage += 1;
-
-					const { flags, ...orderListMsg } = messages.ordersList(
-						availableOrders[currentPage - 1],
-						currentPage,
-						availableOrders.length
-					);
-
-					await buttonInteraction.update(orderListMsg);
-					break;
-				default:
-					break;
+					currentPage =
+						buttonInteraction.customId === ORDERS_LIST_PREV_BUTTON_ID
+							? getPrevPage(currentPage, ordersQty)
+							: getNextPage(currentPage, ordersQty);
+					const msg = deleteMsgFlags(messages.ordersList(orders[currentPage - 1], currentPage, ordersQty)); // Remove 'flags' to prevent Discord API error on update
+					await buttonInteraction.update(msg);
 			}
 		}
 	} catch (error) {
-		console.error(`[orders-work-controller] Unknown error for user ${interaction.user.id}:`, error);
+		console.error(`[orders-work-controller] Unknown error for user ${userId}:`, error);
 		return safeReply(interaction, errorMessages.unknown);
 	} finally {
 		if (abortControllers.get(userId) === abortController) abortControllers.delete(userId);

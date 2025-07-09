@@ -29,13 +29,12 @@ export const orderMenuEmbed = new EmbedBuilder()
 		}
 	);
 
-export default function getOrderInfoEmbed(order: OrderData): EmbedBuilder {
+export function getMyOrdersListEmbed(order: OrderData, currentPage: number, pagesQty: number) {
 	return new EmbedBuilder()
-		.setTitle(`Заказ номер ${order.orderNumber}`)
+		.setTitle(`Ваш заказ номер ${order.orderNumber}`)
 		.setColor("#816CE0")
 		.setFooter({
-			text: "Ваш заказ",
-			iconURL: config.imageUrls.logo
+			text: `📄 Страница ${currentPage} из ${pagesQty}.`
 		})
 		.setDescription(
 			[

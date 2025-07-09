@@ -12,9 +12,9 @@ import {
 	ROLE_REGISTRATION_MODAL_ID,
 	ROLE_SELECT_MENU_ID
 } from "../constants/component-ids";
+import { ROLE_REGISTRATION_TIMEOUT } from "../constants/timeouts";
 
 const activeRegistrations = new Set<string>();
-const INTERACTION_TIMEOUT = 30_000;
 
 export async function handleRoleSelectButton(initialInteraction: ButtonInteraction<"cached">): Promise<void> {
 	const userId = initialInteraction.user.id;
@@ -33,7 +33,7 @@ export async function handleRoleSelectButton(initialInteraction: ButtonInteracti
 			roleSelectInteraction = await message.awaitMessageComponent({
 				filter: i => i.user.id === userId && i.customId === ROLE_SELECT_MENU_ID,
 				componentType: ComponentType.StringSelect,
-				time: INTERACTION_TIMEOUT
+				time: ROLE_REGISTRATION_TIMEOUT
 			});
 		} catch (error) {
 			if (error instanceof Error && "code" in error && error.code === "InteractionCollectorError") {
@@ -61,7 +61,7 @@ export async function handleRoleSelectButton(initialInteraction: ButtonInteracti
 			await initialInteraction.deleteReply();
 			modalInteraction = await roleSelectInteraction.awaitModalSubmit({
 				filter: i => i.user.id === userId && i.customId === ROLE_REGISTRATION_MODAL_ID,
-				time: INTERACTION_TIMEOUT
+				time: ROLE_REGISTRATION_TIMEOUT
 			});
 		} catch (error) {
 			if (error instanceof Error && "code" in error && error.code === "InteractionCollectorError") {
