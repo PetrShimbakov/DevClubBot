@@ -43,6 +43,7 @@ export async function handleViewOrdersListButton(interaction: ButtonInteraction<
 		const orders = await ordersData.getOrders();
 		const userRoles = interaction.member.roles.cache;
 		const availableOrders = orders.filter(order => orderRoles[order.type].some(roleId => userRoles.has(roleId)));
+
 		const ordersQty = availableOrders.length;
 		let currentPage = 1;
 
@@ -61,10 +62,10 @@ export async function handleViewOrdersListButton(interaction: ButtonInteraction<
 				abortController
 			).catch(error => {
 				if (error.code === "InteractionCollectorError") {
-					interaction.deleteReply();
+					interaction.deleteReply().catch();
 					return safeReply(interaction, errorMessages.orderListInactivity);
 				}
-				if (error.message === "abort") return interaction.deleteReply();
+				if (error.message === "abort") return interaction.deleteReply().catch();
 				throw error;
 			});
 
@@ -81,7 +82,7 @@ export async function handleViewOrdersListButton(interaction: ButtonInteraction<
 						buttonInteraction.customId === ORDERS_LIST_PREV_BUTTON_ID
 							? getPrevPage(currentPage, ordersQty)
 							: getNextPage(currentPage, ordersQty);
-					const msg = deleteMsgFlags(messages.ordersList(orders[currentPage - 1], currentPage, ordersQty)); // Remove 'flags' to prevent Discord API error on update
+					const msg = deleteMsgFlags(messages.ordersList(availableOrders[currentPage - 1], currentPage, ordersQty)); // Remove 'flags' to prevent Discord API error on update
 					await buttonInteraction.update(msg);
 			}
 		}
