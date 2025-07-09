@@ -10,12 +10,16 @@ import { CommandsBuilder } from "../commands/commands-builder";
 import errorMessages from "../views/messages/error-messages";
 import { safeReply } from "../utils/reply-utils";
 import { Command } from "../types/commands";
+import rateLimit from "../utils/rate-limit";
+import { COMMANDS_RATE_LIMIT } from "../constants/rate-limits";
 
-export function handleCommand(
-	interaction:
-		| ChatInputCommandInteraction<"cached">
-		| UserContextMenuCommandInteraction<"cached">
-		| MessageContextMenuCommandInteraction<"cached">
+type CommandHandlerInteraction =
+	| ChatInputCommandInteraction<"cached">
+	| UserContextMenuCommandInteraction<"cached">
+	| MessageContextMenuCommandInteraction<"cached">;
+
+export const handleCommand = rateLimit<CommandHandlerInteraction>(COMMANDS_RATE_LIMIT)(function (
+	interaction: CommandHandlerInteraction
 ) {
 	const commands: CommandsBuilder<Command> = CommandsBuilder.combine(slashCommands, contextMenuCommands);
 	const command = commands.getCommand(interaction.commandName, interaction.commandType);
@@ -36,4 +40,4 @@ export function handleCommand(
 		console.error(`[commands-controller] Failed to execute command "${command.data.name}":`, error);
 		safeReply(interaction, errorMessages.unknown);
 	});
-}
+});

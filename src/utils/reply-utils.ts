@@ -11,7 +11,8 @@ async function unsafeReply(interaction: Interaction, options: InteractionReplyOp
 }
 
 async function safeReply(interaction: Interaction, options: InteractionReplyOptions, retries: number = 0): Promise<void> {
-	if (!interaction.isRepliable()) throw new Error("[reply-utils] safeReply can only be used with repliable interactions.");
+	if (!interaction.isRepliable())
+		return console.error("[reply-utils] safeReply can only be used with repliable interactions.");
 
 	for (let _ = 0; _ <= retries; _++) {
 		try {

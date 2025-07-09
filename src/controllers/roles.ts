@@ -13,10 +13,14 @@ import {
 	ROLE_SELECT_MENU_ID
 } from "../constants/component-ids";
 import { ROLE_REGISTRATION_TIMEOUT } from "../constants/timeouts";
+import rateLimit from "../utils/rate-limit";
+import { ROLE_SELECT_BUTTON_RATE_LIMIT } from "../constants/rate-limits";
 
 const activeRegistrations = new Set<string>();
 
-export async function handleRoleSelectButton(initialInteraction: ButtonInteraction<"cached">): Promise<void> {
+export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROLE_SELECT_BUTTON_RATE_LIMIT)(async function (
+	initialInteraction: ButtonInteraction<"cached">
+): Promise<void> {
 	const userId = initialInteraction.user.id;
 	const member = initialInteraction.member;
 	const userData = await usersData.getUser(userId);
@@ -106,4 +110,4 @@ export async function handleRoleSelectButton(initialInteraction: ButtonInteracti
 	} finally {
 		activeRegistrations.delete(userId);
 	}
-}
+});
