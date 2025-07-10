@@ -23,6 +23,10 @@ class Config {
 		supportLog: getEnvVar("SUPPORT_LOG_CHANNEL_ID")
 	};
 
+	public readonly categories = {
+		orderChats: getEnvVar("ORDER_CHATS_CATEGORY_ID")
+	};
+
 	public readonly imageUrls = {
 		logo: getEnvVar("LOGO"),
 		banner: getEnvVar("BANNER")

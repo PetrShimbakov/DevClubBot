@@ -5,3 +5,5 @@ export const roleOrderLimits: Record<string, number> = {
 	[config.roleIds.superClient]: 3,
 	[config.roleIds.booster]: 6
 };
+
+export const DEFAULT_ORDER_LIMIT = 1;

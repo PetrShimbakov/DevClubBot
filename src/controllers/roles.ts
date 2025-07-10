@@ -9,7 +9,7 @@ import {
 import { ROLE_SELECT_BUTTON_RATE_LIMIT } from "../constants/rate-limits";
 import { ROLE_REGISTRATION_TIMEOUT } from "../constants/timeouts";
 import usersData from "../models/users-data";
-import { awaitWithAbort } from "../utils/await-utils";
+import { AbortControllerMap, awaitWithAbort } from "../utils/abort-utils";
 import rateLimit from "../utils/rate-limit";
 import { safeDeleteReply, safeReply } from "../utils/reply-utils";
 import errorMessages from "../views/messages/error-messages";
@@ -17,7 +17,7 @@ import messages from "../views/messages/messages";
 import successMessages from "../views/messages/success-messages";
 import getRoleRegistrationModal from "../views/modals/registration";
 
-const roleSelectAbortControllers = new Map<string, AbortController>();
+const roleSelectSessions = new AbortControllerMap();
 export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROLE_SELECT_BUTTON_RATE_LIMIT)(async function (
 	initialInteraction: ButtonInteraction<"cached">
 ): Promise<void> {
@@ -25,11 +25,7 @@ export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROL
 	const member = initialInteraction.member;
 	const userData = await usersData.getUser(userId);
 
-	if (!member) return safeReply(initialInteraction, errorMessages.unknown); // recommendation from community
-	if (roleSelectAbortControllers.has(userId)) roleSelectAbortControllers.get(userId)!.abort();
-
-	const abortController = new AbortController();
-	roleSelectAbortControllers.set(userId, abortController);
+	const abortController = roleSelectSessions.start(userId);
 
 	try {
 		let roleSelectInteraction;
@@ -120,6 +116,6 @@ export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROL
 		console.error(`[roles-controller] Unknown error for user ${userId}:`, error);
 		return safeReply(initialInteraction, errorMessages.unknown);
 	} finally {
-		if (roleSelectAbortControllers.get(userId) === abortController) roleSelectAbortControllers.delete(userId);
+		roleSelectSessions.finish(userId, abortController);
 	}
 });

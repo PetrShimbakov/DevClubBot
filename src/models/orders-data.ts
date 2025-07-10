@@ -10,32 +10,42 @@ class OrdersData {
 		return this._collection ?? (this._collection = (await getDataBase()).collection<OrderData>(ORDERS_COLLECTION));
 	}
 
-	public async addOrder(type: OrderType, userDiscordId: string, description: string, budget: string): Promise<void> {
+	public async addOrder(
+		type: OrderType,
+		userDiscordId: string,
+		description: string,
+		budget: string,
+		orderChannelId: string
+	): Promise<OrderData> {
 		const collection = await this.getCollection();
 
 		const lastOrder = await collection.find({ userDiscordId }).sort({ orderNumber: -1 }).limit(1).next();
-
 		const nextOrderNumber = lastOrder ? lastOrder.orderNumber + 1 : 1;
 
 		try {
-			await collection.insertOne({
+			const result = await collection.insertOne({
 				type,
 				userDiscordId,
 				description,
 				budget,
+				orderChannelId,
 				orderNumber: nextOrderNumber,
 				createdAt: new Date(),
 				isTaken: false
 			});
+			const order = await collection.findOne({ _id: result.insertedId });
+			if (!order) throw new Error("Order not found after insertion.");
+
+			return order;
 		} catch (error: any) {
-			if (error?.code === 11000) return; // MongoDB duplicate key error code
+			if (error?.code === 11000) {
+				// MongoDB duplicate key error code
+				const existingOrder = await collection.findOne({ userDiscordId, orderNumber: nextOrderNumber });
+				if (!existingOrder) throw new Error("Order not found after duplicate key error.");
+				return existingOrder;
+			}
 			throw error;
 		}
-	}
-
-	public async makeOrderPriority(userDiscordId: string, orderNumber: number): Promise<void> {
-		const collection = await this.getCollection();
-		await collection.updateOne({ userDiscordId, orderNumber }, { $set: { isPriority: true } });
 	}
 
 	public async removeOrder(userDiscordId: string, orderNumber: number): Promise<void> {

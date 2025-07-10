@@ -21,5 +21,6 @@ export interface OrderData {
 	budget: string;
 	createdAt: Date;
 	isTaken: boolean;
-	takenBy?: boolean;
+	takenBy?: string;
+	orderChannelId: string;
 }

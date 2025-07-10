@@ -42,6 +42,7 @@ export function getMyOrdersListEmbed(order: OrderData, currentPage: number, page
 				`**Статус:** ${order.isTaken ? "В работе" : "Ожидание отклика"}`,
 				`**Дата создания:** ${getDiscordDate(order.createdAt)}`,
 				`**Бюджет:** ${order.budget}`,
+				`**Чат заказа:** <#${order.orderChannelId}>`,
 				`**Описание:** ${order.description}`
 			].join("\n")
 		);

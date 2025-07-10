@@ -1,4 +1,6 @@
-import { ButtonInteraction, ComponentType } from "discord.js";
+import { ButtonInteraction, ChannelType, ComponentType, PermissionFlagsBits } from "discord.js";
+import client from "../../client";
+import config from "../../config";
 import {
 	MY_ORDERS_LIST_NEXT_BUTTON_ID,
 	MY_ORDERS_LIST_PREV_BUTTON_ID,
@@ -8,12 +10,12 @@ import {
 	ORDER_MODAL_ID,
 	ORDER_TYPE_SELECT_MENU_ID
 } from "../../constants/component-ids";
-import { roleOrderLimits } from "../../constants/orders/order-limits";
+import { DEFAULT_ORDER_LIMIT, roleOrderLimits } from "../../constants/orders/order-limits";
 import { CREATE_ORDER_BUTTON_RATE_LIMIT, VIEW_MY_ORDERS_BUTTON_RATE_LIMIT } from "../../constants/rate-limits";
 import { MY_ORDERS_LIST_TIMEOUT, ORDER_CREATION_TIMEOUT } from "../../constants/timeouts";
 import ordersData from "../../models/orders-data";
-import { OrderType } from "../../types/order";
-import { awaitWithAbort } from "../../utils/await-utils";
+import { OrderData, OrderType } from "../../types/order";
+import { AbortControllerMap, awaitWithAbort } from "../../utils/abort-utils";
 import { deleteMsgFlags } from "../../utils/message-utils";
 import { getNextPage, getPrevPage } from "../../utils/page-utils";
 import rateLimit from "../../utils/rate-limit";
@@ -24,7 +26,7 @@ import successMessages from "../../views/messages/success-messages";
 import { getOrderModal } from "../../views/modals/orders/orders-manage";
 import { sendOrder } from "./orders-work";
 
-const createOrderAbortControllers = new Map<string, AbortController>();
+const createOrderSessions = new AbortControllerMap();
 export const handleCreateOrderButton = rateLimit<ButtonInteraction<"cached">>(CREATE_ORDER_BUTTON_RATE_LIMIT)(
 	async function (initialInteraction: ButtonInteraction<"cached">): Promise<void> {
 		const userId = initialInteraction.user.id;
@@ -32,13 +34,14 @@ export const handleCreateOrderButton = rateLimit<ButtonInteraction<"cached">>(CR
 		const userOrdersQty = (await ordersData.getOrders(userId)).length;
 
 		if (!member) return safeReply(initialInteraction, errorMessages.unknown); // recommendation from community
-		if (createOrderAbortControllers.has(userId)) createOrderAbortControllers.get(userId)!.abort();
 
-		const abortController = new AbortController();
-		createOrderAbortControllers.set(userId, abortController);
+		const abortController = createOrderSessions.start(userId);
 
 		try {
-			const ordersLimit = member.roles.cache.reduce((max, role) => Math.max(max, roleOrderLimits[role.id] ?? 1), 1);
+			const ordersLimit = member.roles.cache.reduce(
+				(max, role) => Math.max(max, roleOrderLimits[role.id] ?? DEFAULT_ORDER_LIMIT),
+				DEFAULT_ORDER_LIMIT
+			);
 			if (userOrdersQty >= ordersLimit) return safeReply(initialInteraction, errorMessages.ordersLimitReached(ordersLimit));
 
 			let selectMenuInteraction;
@@ -90,23 +93,31 @@ export const handleCreateOrderButton = rateLimit<ButtonInteraction<"cached">>(CR
 			if (orderDescription.length > 300) return safeReply(modalInteraction, errorMessages.tooLongOrderDescription(300));
 			if (orderBudget.length > 50) return safeReply(modalInteraction, errorMessages.tooLongOrderBudget(50));
 
-			await ordersData.addOrder(selectedOrderType, userId, orderDescription, orderBudget);
+			const orderData = await ordersData.addOrder(
+				selectedOrderType,
+				userId,
+				orderDescription,
+				orderBudget,
+				await createOrderChannel()
+			);
+			await configureOrderChannel(orderData);
+
+			await sendOrder(selectedOrderType);
 			await safeReply(modalInteraction, successMessages.ordered);
-			sendOrder(selectedOrderType);
 		} catch (error) {
 			if (error instanceof Error && error.message === "abort") {
 				safeDeleteReply(initialInteraction);
 				return;
 			}
-			console.error(`[orders-controller] Unknown error for user ${userId}:`, error);
+			console.error(`[orders-manage-controller] Unknown error for user ${userId}:`, error);
 			return safeReply(initialInteraction, errorMessages.unknown);
 		} finally {
-			if (createOrderAbortControllers.get(userId) === abortController) createOrderAbortControllers.delete(userId);
+			createOrderSessions.finish(userId, abortController);
 		}
 	}
 );
 
-const ordersListAbortControllers = new Map<string, AbortController>();
+const ordersListSessions = new AbortControllerMap();
 export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached">>(VIEW_MY_ORDERS_BUTTON_RATE_LIMIT)(
 	async function (interaction: ButtonInteraction<"cached">): Promise<void> {
 		const ALLOWED_BUTTON_IDS = [
@@ -116,10 +127,7 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 		];
 		const userId = interaction.user.id;
 
-		if (ordersListAbortControllers.has(userId)) ordersListAbortControllers.get(userId)!.abort();
-
-		const abortController = new AbortController();
-		ordersListAbortControllers.set(userId, abortController);
+		const abortController = ordersListSessions.start(userId);
 
 		try {
 			const orders = await ordersData.getOrders(userId);
@@ -154,6 +162,11 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 				switch (buttonInteraction.customId) {
 					case MY_ORDERS_LIST_REMOVE_BUTTON_ID:
 						const orderNumber = orders[currentPage - 1].orderNumber;
+						const guild = client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId));
+						const channelId = orders[currentPage - 1].orderChannelId;
+						const channel = guild.channels.cache.get(channelId) || (await guild.channels.fetch(channelId));
+
+						if (channel) await channel.delete();
 						await ordersData.removeOrder(userId, orderNumber);
 						await safeReply(interaction, successMessages.orderRemoved(orderNumber));
 						return await safeDeleteReply(interaction);
@@ -163,15 +176,62 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 							buttonInteraction.customId === MY_ORDERS_LIST_PREV_BUTTON_ID
 								? getPrevPage(currentPage, ordersQty)
 								: getNextPage(currentPage, ordersQty);
-						const message = deleteMsgFlags(messages.myOrdersList(orders[currentPage - 1], currentPage, ordersQty)); // Remove 'flags' to prevent Discord API error on update
-						await buttonInteraction.update(message);
+						const msg = deleteMsgFlags(messages.myOrdersList(orders[currentPage - 1], currentPage, ordersQty)); // Remove 'flags' to prevent Discord API error on update
+						await buttonInteraction.update(msg);
 				}
 			}
 		} catch (error) {
 			console.error(`[orders-work-controller] Unknown error for user ${userId}:`, error);
 			return safeReply(interaction, errorMessages.unknown);
 		} finally {
-			if (ordersListAbortControllers.get(userId) === abortController) ordersListAbortControllers.delete(userId);
+			ordersListSessions.finish(userId, abortController);
 		}
 	}
 );
+
+// Utils for handleCreateOrderButton
+async function createOrderChannel(): Promise<string> {
+	const guild = client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId));
+	const category = guild.channels.cache.get(config.categories.orderChats);
+
+	if (!category || category.type !== ChannelType.GuildCategory) {
+		throw new Error("orderChats category not found.");
+	}
+
+	const channel = await guild.channels.create({
+		name: "not-configured",
+		type: ChannelType.GuildText,
+		parent: category.id,
+		permissionOverwrites: [
+			{
+				id: guild.roles.everyone,
+				deny: [PermissionFlagsBits.ViewChannel]
+			}
+		]
+	});
+
+	return channel.id;
+}
+async function configureOrderChannel(order: OrderData): Promise<void> {
+	const guild = client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId));
+	const channel = guild.channels.cache.get(order.orderChannelId) || (await guild.channels.fetch(order.orderChannelId));
+	const member = guild.members.cache.get(order.userDiscordId) || (await guild.members.fetch(order.userDiscordId));
+
+	if (!member) throw new Error(`configureChannel: Order owner not found. Order: ${order}`);
+	if (!channel || channel.type !== ChannelType.GuildText)
+		throw new Error(`configureChannel: Order channel not found. Order: ${order}`);
+
+	let channelName = `💼︱заказ-${order.orderNumber}︱${member.displayName}`;
+	if (channelName.length > 100) channelName = channelName.slice(0, 97) + "...";
+
+	await channel.setName(channelName);
+
+	await channel.permissionOverwrites.edit(order.userDiscordId, {
+		ViewChannel: true,
+		SendMessages: true,
+		AttachFiles: true,
+		ReadMessageHistory: true
+	});
+
+	await channel.send(messages.newOrderChannelInfo(order));
+}

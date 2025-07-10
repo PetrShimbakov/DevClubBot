@@ -11,7 +11,7 @@ import { VIEW_ORDERS_BUTTON_RATE_LIMIT } from "../../constants/rate-limits";
 import { ORDERS_LIST_TIMEOUT } from "../../constants/timeouts";
 import ordersData from "../../models/orders-data";
 import { OrderType } from "../../types/order";
-import { awaitWithAbort } from "../../utils/await-utils";
+import { AbortControllerMap, awaitWithAbort } from "../../utils/abort-utils";
 import { deleteMsgFlags } from "../../utils/message-utils";
 import { getNextPage, getPrevPage } from "../../utils/page-utils";
 import rateLimit from "../../utils/rate-limit";
@@ -31,21 +31,20 @@ export async function sendOrder(orderType: OrderType) {
 	}
 }
 
-const ordersListAbortControllers = new Map<string, AbortController>();
+const ordersListSessions = new AbortControllerMap();
 export const handleViewOrdersListButton = rateLimit<ButtonInteraction<"cached">>(VIEW_ORDERS_BUTTON_RATE_LIMIT)(
 	async function (interaction: ButtonInteraction<"cached">) {
 		const ALLOWED_BUTTON_IDS = [ORDERS_LIST_PREV_BUTTON_ID, ORDERS_LIST_NEXT_BUTTON_ID, ORDERS_LIST_TAKE_BUTTON_ID];
 		const userId = interaction.user.id;
 
-		if (ordersListAbortControllers.has(userId)) ordersListAbortControllers.get(userId)!.abort();
-
-		const abortController = new AbortController();
-		ordersListAbortControllers.set(userId, abortController);
+		const abortController = ordersListSessions.start(userId);
 
 		try {
 			const orders = await ordersData.getOrders();
 			const userRoles = interaction.member.roles.cache;
-			const availableOrders = orders.filter(order => orderRoles[order.type].some(roleId => userRoles.has(roleId)));
+			const availableOrders = orders.filter(order =>
+				orderRoles[order.type].some(roleId => userRoles.has(roleId) && !order.isTaken)
+			);
 
 			const ordersQty = availableOrders.length;
 			let currentPage = 1;
@@ -93,7 +92,7 @@ export const handleViewOrdersListButton = rateLimit<ButtonInteraction<"cached">>
 			console.error(`[orders-work-controller] Unknown error for user ${userId}:`, error);
 			return safeReply(interaction, errorMessages.unknown);
 		} finally {
-			if (ordersListAbortControllers.get(userId) === abortController) ordersListAbortControllers.delete(userId);
+			ordersListSessions.finish(userId, abortController);
 		}
 	}
 );
