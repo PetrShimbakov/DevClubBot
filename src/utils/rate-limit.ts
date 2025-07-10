@@ -20,8 +20,10 @@ export default function rateLimit<T extends Interaction = Interaction>(limit: nu
 			if (!userId) return fn(interaction);
 
 			const lastRequest = activeSessions.get(userId) ?? 0;
+			const timeLeft = Math.ceil((limit - (Date.now() - lastRequest)) / 1000);
+
 			if (Date.now() - lastRequest < limit) {
-				if (interaction.isRepliable()) interaction.reply(errorMessages.tooManyRequests).catch(() => {});
+				if (interaction.isRepliable()) interaction.reply(errorMessages.rateLimit(timeLeft)).catch();
 				return;
 			}
 

@@ -1,5 +1,5 @@
 import { ButtonInteraction, ComponentType } from "discord.js";
-import { safeReply } from "../utils/reply-utils";
+import { safeDeleteReply, safeReply } from "../utils/reply-utils";
 import errorMessages from "../views/messages/error-messages";
 import messages from "../views/messages/messages";
 import getRoleRegistrationModal from "../views/modals/registration";
@@ -15,9 +15,9 @@ import {
 import { ROLE_REGISTRATION_TIMEOUT } from "../constants/timeouts";
 import rateLimit from "../utils/rate-limit";
 import { ROLE_SELECT_BUTTON_RATE_LIMIT } from "../constants/rate-limits";
+import { awaitWithAbort } from "../utils/await-utils";
 
-const activeRegistrations = new Set<string>();
-
+const roleSelectAbortControllers = new Map<string, AbortController>();
 export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROLE_SELECT_BUTTON_RATE_LIMIT)(async function (
 	initialInteraction: ButtonInteraction<"cached">
 ): Promise<void> {
@@ -26,19 +26,24 @@ export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROL
 	const userData = await usersData.getUser(userId);
 
 	if (!member) return safeReply(initialInteraction, errorMessages.unknown); // recommendation from community
-	if (activeRegistrations.has(userId)) return safeReply(initialInteraction, errorMessages.tooManyRequests);
-	activeRegistrations.add(userId);
+	if (roleSelectAbortControllers.has(userId)) roleSelectAbortControllers.get(userId)!.abort();
+
+	const abortController = new AbortController();
+	roleSelectAbortControllers.set(userId, abortController);
 
 	try {
 		let roleSelectInteraction;
 		try {
 			await initialInteraction.reply(messages.roleSelection(userId, userData));
 			const message = await initialInteraction.fetchReply();
-			roleSelectInteraction = await message.awaitMessageComponent({
-				filter: i => i.user.id === userId && i.customId === ROLE_SELECT_MENU_ID,
-				componentType: ComponentType.StringSelect,
-				time: ROLE_REGISTRATION_TIMEOUT
-			});
+			roleSelectInteraction = await awaitWithAbort(
+				message.awaitMessageComponent({
+					filter: i => i.user.id === userId && i.customId === ROLE_SELECT_MENU_ID,
+					componentType: ComponentType.StringSelect,
+					time: ROLE_REGISTRATION_TIMEOUT
+				}),
+				abortController
+			);
 		} catch (error) {
 			if (error instanceof Error && "code" in error && error.code === "InteractionCollectorError") {
 				return safeReply(initialInteraction, errorMessages.timeLimit);
@@ -55,18 +60,21 @@ export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROL
 		if (userData && userData.rolesData.some(role => role.roleId === selectedRoleId)) {
 			await usersData.removeRole(userId, selectedRoleId);
 			await member.roles.remove(selectedRoleId);
-			await initialInteraction.deleteReply();
+			await safeDeleteReply(initialInteraction);
 			return safeReply(roleSelectInteraction, successMessages.roleRemoved(selectedRoleId));
 		}
 
 		let modalInteraction;
 		try {
 			await roleSelectInteraction.showModal(getRoleRegistrationModal(roleSelectInteraction.values[0], userData?.name));
-			await initialInteraction.deleteReply();
-			modalInteraction = await roleSelectInteraction.awaitModalSubmit({
-				filter: i => i.user.id === userId && i.customId === ROLE_REGISTRATION_MODAL_ID,
-				time: ROLE_REGISTRATION_TIMEOUT
-			});
+			await safeDeleteReply(initialInteraction);
+			modalInteraction = await awaitWithAbort(
+				roleSelectInteraction.awaitModalSubmit({
+					filter: i => i.user.id === userId && i.customId === ROLE_REGISTRATION_MODAL_ID,
+					time: ROLE_REGISTRATION_TIMEOUT
+				}),
+				abortController
+			);
 		} catch (error) {
 			if (error instanceof Error && "code" in error && error.code === "InteractionCollectorError") {
 				return safeReply(modalInteraction ?? roleSelectInteraction, errorMessages.timeLimit);
@@ -105,9 +113,13 @@ export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROL
 		await member.roles.add(selectedRoleId);
 		return safeReply(modalInteraction, successMessages.roleAdded(selectedRoleId));
 	} catch (error) {
+		if (error instanceof Error && error.message === "abort") {
+			safeDeleteReply(initialInteraction);
+			return;
+		}
 		console.error(`[roles-controller] Unknown error for user ${userId}:`, error);
 		return safeReply(initialInteraction, errorMessages.unknown);
 	} finally {
-		activeRegistrations.delete(userId);
+		if (roleSelectAbortControllers.get(userId) === abortController) roleSelectAbortControllers.delete(userId);
 	}
 });

@@ -3,6 +3,11 @@ import { roleOrderLimits } from "../../constants/orders/order-limits";
 import config from "../../config";
 
 class ErrorMessages {
+	public readonly inDev: InteractionReplyOptions = {
+		content: "Прости, данная функция ещё разрабатывается. 🛠",
+		flags: MessageFlags.Ephemeral
+	};
+
 	public readonly unknown: InteractionReplyOptions = {
 		content: "К сожалению, где-то произошла ошибка. Пожалуйста, сообщите об этом моему создателю. 😔",
 		flags: MessageFlags.Ephemeral
@@ -10,11 +15,6 @@ class ErrorMessages {
 
 	public readonly notTextChannel: InteractionReplyOptions = {
 		content: "Пожалуйста, выберите текстовый канал.",
-		flags: MessageFlags.Ephemeral
-	};
-
-	public readonly inDev: InteractionReplyOptions = {
-		content: "Прости, данная функция ещё разрабатывается. 🛠",
 		flags: MessageFlags.Ephemeral
 	};
 
@@ -40,11 +40,6 @@ class ErrorMessages {
 
 	public readonly commandNotFound: InteractionReplyOptions = {
 		content: "Такой команды у меня нет... Или ты что-то выдумал? 🤨",
-		flags: MessageFlags.Ephemeral
-	};
-
-	public readonly tooManyRequests: InteractionReplyOptions = {
-		content: "Ого, не так быстро! Дай отдышаться, у меня чуть не расплавился сервер. 🔥",
 		flags: MessageFlags.Ephemeral
 	};
 
@@ -100,6 +95,16 @@ class ErrorMessages {
 	public tooLongOrderBudget(limit: number): InteractionReplyOptions {
 		return {
 			content: `Описание бюджета слишком длинное. Постарайся уместить его в ${limit} символов.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
+	public rateLimit(timeLeft: number): InteractionReplyOptions {
+		const n = Math.abs(timeLeft) % 100;
+		const n1 = n % 10;
+		const secWord = n > 10 && n < 20 ? "секунд" : n1 === 1 ? "секунду" : n1 > 1 && n1 < 5 ? "секунды" : "секунд";
+		return {
+			content: `Ого, не так быстро! Дай отдышаться еще ${timeLeft} ${secWord}, у меня чуть не расплавился сервер. 🔥`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
