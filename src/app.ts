@@ -1,10 +1,10 @@
-import config from "./config";
-import { Client, Events, GatewayIntentBits } from "discord.js";
-import handleInteractions from "./handlers/interaction-handler";
-import { ensureDataBaseIndexes } from "./database/mongo";
-import handleMemberRemove from "./handlers/member-removed-handler";
+import { Events } from "discord.js";
 import { name as appName } from "../package.json";
 import client from "./client";
+import config from "./config";
+import { ensureDataBaseIndexes } from "./database/mongo";
+import handleInteractions from "./handlers/interaction-handler";
+import handleMemberRemove from "./handlers/member-removed-handler";
 
 async function main() {
 	console.log(`🚀 Application ${appName} is starting up...`);

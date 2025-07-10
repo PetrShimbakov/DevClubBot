@@ -1,21 +1,21 @@
 import { ButtonInteraction, ComponentType } from "discord.js";
-import { safeDeleteReply, safeReply } from "../utils/reply-utils";
-import errorMessages from "../views/messages/error-messages";
-import messages from "../views/messages/messages";
-import getRoleRegistrationModal from "../views/modals/registration";
 import config from "../config";
-import usersData from "../models/users-data";
-import successMessages from "../views/messages/success-messages";
 import {
 	ROLE_REG_BEGINNER_INPUT_ID,
 	ROLE_REG_NAME_INPUT_ID,
 	ROLE_REGISTRATION_MODAL_ID,
 	ROLE_SELECT_MENU_ID
 } from "../constants/component-ids";
-import { ROLE_REGISTRATION_TIMEOUT } from "../constants/timeouts";
-import rateLimit from "../utils/rate-limit";
 import { ROLE_SELECT_BUTTON_RATE_LIMIT } from "../constants/rate-limits";
+import { ROLE_REGISTRATION_TIMEOUT } from "../constants/timeouts";
+import usersData from "../models/users-data";
 import { awaitWithAbort } from "../utils/await-utils";
+import rateLimit from "../utils/rate-limit";
+import { safeDeleteReply, safeReply } from "../utils/reply-utils";
+import errorMessages from "../views/messages/error-messages";
+import messages from "../views/messages/messages";
+import successMessages from "../views/messages/success-messages";
+import getRoleRegistrationModal from "../views/modals/registration";
 
 const roleSelectAbortControllers = new Map<string, AbortController>();
 export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROLE_SELECT_BUTTON_RATE_LIMIT)(async function (

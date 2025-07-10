@@ -1,4 +1,4 @@
-import { Collection, RESTPostAPIApplicationCommandsJSONBody, Routes, REST, ApplicationCommandType } from "discord.js";
+import { ApplicationCommandType, Collection, REST, RESTPostAPIApplicationCommandsJSONBody, Routes } from "discord.js";
 import config from "../config";
 import { Command, CommandMinimum } from "../types/commands";
 

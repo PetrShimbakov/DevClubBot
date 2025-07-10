@@ -1,16 +1,10 @@
-import { CommandsBuilder } from "./commands-builder";
-import {
-	SlashCommandChannelOption,
-	SlashCommandBuilder,
-	SlashCommandIntegerOption,
-	SlashCommandNumberOption
-} from "discord.js";
-import { SlashCommand } from "../types/commands";
-import sendRules from "../controllers/commands/send-rules";
-import sendRoles from "../controllers/commands/send-roles";
-import config from "../config";
-import sendOrderMenu from "../controllers/commands/send-order-menu";
+import { SlashCommandBuilder, SlashCommandChannelOption, SlashCommandNumberOption } from "discord.js";
 import clearChat from "../controllers/commands/clear-chat";
+import sendOrderMenu from "../controllers/commands/send-order-menu";
+import sendRoles from "../controllers/commands/send-roles";
+import sendRules from "../controllers/commands/send-rules";
+import { SlashCommand } from "../types/commands";
+import { CommandsBuilder } from "./commands-builder";
 
 const slashCommands = new CommandsBuilder<SlashCommand>()
 

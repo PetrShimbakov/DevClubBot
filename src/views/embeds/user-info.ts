@@ -1,7 +1,7 @@
 import { EmbedBuilder, User } from "discord.js";
 import config from "../../config";
-import { IUserData } from "../../types/user-data";
 import { roleLabels } from "../../constants/role-labels";
+import { IUserData } from "../../types/user-data";
 import { getDiscordDate } from "../../utils/message-utils";
 
 export default function getUserInfoEmbed(userData: IUserData, user: User): EmbedBuilder {

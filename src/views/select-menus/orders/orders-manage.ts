@@ -1,7 +1,7 @@
 import { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { ORDER_TYPE_SELECT_MENU_ID } from "../../../constants/component-ids";
-import { OrderType } from "../../../types/order";
 import { orderDescriptions, orderEmojis, orderLabels } from "../../../constants/orders/order-labels";
+import { OrderType } from "../../../types/order";
 
 const orderTypes: OrderType[] = Object.values(OrderType);
 

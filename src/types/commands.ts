@@ -18,4 +18,4 @@ type ContextMenuCommand = BaseCommand<ContextMenuCommandBuilder, ContextMenuComm
 type Command = SlashCommand | ContextMenuCommand;
 type CommandMinimum = { type?: ApplicationCommandType; name: string };
 
-export { ContextMenuCommand, SlashCommand, Command, CommandMinimum };
+export { Command, CommandMinimum, ContextMenuCommand, SlashCommand };

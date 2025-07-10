@@ -1,14 +1,14 @@
-import config from "../config";
-import { CommandsBuilder } from "./commands-builder";
 import {
-	ContextMenuCommandBuilder,
 	ApplicationCommandType,
-	UserContextMenuCommandInteraction,
+	ContextMenuCommandBuilder,
 	ContextMenuCommandInteraction,
-	MessageContextMenuCommandInteraction
+	MessageContextMenuCommandInteraction,
+	UserContextMenuCommandInteraction
 } from "discord.js";
-import { ContextMenuCommand } from "../types/commands";
+import config from "../config";
 import sendUserInfo from "../controllers/commands/user-info";
+import { ContextMenuCommand } from "../types/commands";
+import { CommandsBuilder } from "./commands-builder";
 
 function isUserContextMenu(
 	interaction: ContextMenuCommandInteraction<"cached">

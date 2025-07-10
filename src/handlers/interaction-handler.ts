@@ -1,7 +1,5 @@
-import { VIEW_ORDERS_LIST_BUTTON_ID } from "./../constants/component-ids";
 import { Events } from "discord.js";
-import { handleCommand } from "../controllers/commands";
-import { handleRoleSelectButton } from "../controllers/roles";
+import client from "../client";
 import {
 	CREATE_ORDER_BUTTON_ID,
 	ROLE_SELECT_BUTTON_ID,
@@ -10,9 +8,11 @@ import {
 	VIEW_MY_ORDERS_BUTTON_ID
 } from "../constants/component-ids";
 import { handleUpdateBioButton, handleUpdateBioModal } from "../controllers/bio-update";
+import { handleCommand } from "../controllers/commands";
 import { handleCreateOrderButton, handleViewMyOrdersListButton } from "../controllers/orders/orders-manage";
-import client from "../client";
 import { handleViewOrdersListButton } from "../controllers/orders/orders-work";
+import { handleRoleSelectButton } from "../controllers/roles";
+import { VIEW_ORDERS_LIST_BUTTON_ID } from "./../constants/component-ids";
 
 export default function handleInteractions() {
 	client.on(Events.InteractionCreate, interaction => {

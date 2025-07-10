@@ -1,8 +1,8 @@
 import { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import config from "../../config";
-import { IUserData } from "../../types/user-data";
 import { ROLE_SELECT_MENU_ID } from "../../constants/component-ids";
 import { detailedRoleLabels } from "../../constants/role-labels";
+import { IUserData } from "../../types/user-data";
 
 function getDescription(userData: IUserData | null, roleKey: keyof typeof config.devRoleIds): string {
 	return userData && userData.rolesData.some(role => role.roleId === config.devRoleIds[roleKey])

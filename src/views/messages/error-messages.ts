@@ -1,6 +1,6 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
-import { roleOrderLimits } from "../../constants/orders/order-limits";
 import config from "../../config";
+import { roleOrderLimits } from "../../constants/orders/order-limits";
 
 class ErrorMessages {
 	public readonly inDev: InteractionReplyOptions = {

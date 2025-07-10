@@ -1,10 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import {
 	CREATE_ORDER_BUTTON_ID,
-	VIEW_MY_ORDERS_BUTTON_ID,
+	MY_ORDERS_LIST_NEXT_BUTTON_ID,
 	MY_ORDERS_LIST_PREV_BUTTON_ID,
 	MY_ORDERS_LIST_REMOVE_BUTTON_ID,
-	MY_ORDERS_LIST_NEXT_BUTTON_ID
+	VIEW_MY_ORDERS_BUTTON_ID
 } from "../../../constants/component-ids";
 
 export const orderMenuButtons = new ActionRowBuilder().addComponents(

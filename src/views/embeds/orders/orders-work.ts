@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
-import { OrderData } from "../../../types/order";
 import { orderEmojis, orderLabels } from "../../../constants/orders/order-labels";
+import { OrderData } from "../../../types/order";
 import { getDiscordDate } from "../../../utils/message-utils";
 
 export function getOrdersListEmbed(order: OrderData, currentPage: number, pagesQty: number) {

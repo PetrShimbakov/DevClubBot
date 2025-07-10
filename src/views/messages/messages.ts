@@ -1,18 +1,18 @@
 import { ActionRowBuilder, InteractionReplyOptions, MessageCreateOptions, MessageFlags, User } from "discord.js";
-import { IUserData } from "../../types/user-data";
-import getRoleSelectMenu from "../select-menus/roles";
-import { OrderData, OrderType } from "../../types/order";
-import { getOrdersListEmbed } from "../embeds/orders/orders-work";
-import { ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
-import { getOrderTypeSelectMenu } from "../select-menus/orders/orders-manage";
 import { orderRoles } from "../../constants/orders/order-roles";
-import { myOrdersListButtons, orderMenuButtons } from "../buttons/orders/orders-manage";
-import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
-import getUserInfoEmbed from "../embeds/user-info";
-import rolesEmbed from "../embeds/roles";
-import roleSelectButton from "../buttons/roles";
+import { OrderData, OrderType } from "../../types/order";
+import { IUserData } from "../../types/user-data";
 import bioUpdateButton from "../buttons/bio";
+import { myOrdersListButtons, orderMenuButtons } from "../buttons/orders/orders-manage";
+import { ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
+import roleSelectButton from "../buttons/roles";
+import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
+import { getOrdersListEmbed } from "../embeds/orders/orders-work";
+import rolesEmbed from "../embeds/roles";
 import rulesEmbed from "../embeds/rules";
+import getUserInfoEmbed from "../embeds/user-info";
+import { getOrderTypeSelectMenu } from "../select-menus/orders/orders-manage";
+import getRoleSelectMenu from "../select-menus/roles";
 
 class Messages {
 	public roleSelection(userId: string, userData?: IUserData): InteractionReplyOptions {

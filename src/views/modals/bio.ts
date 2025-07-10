@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
-import { UPDATE_BIO_MODAL_ID, UPDATE_BIO_INPUT_ID } from "../../constants/component-ids";
+import { UPDATE_BIO_INPUT_ID, UPDATE_BIO_MODAL_ID } from "../../constants/component-ids";
 
 export default function getBioUpdateModal(oldBio?: string): ModalBuilder {
 	return new ModalBuilder()

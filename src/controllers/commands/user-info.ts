@@ -1,7 +1,6 @@
-import { MessageFlags, UserContextMenuCommandInteraction } from "discord.js";
-import { safeReply } from "../../utils/reply-utils";
-import getUserInfoEmbed from "../../views/embeds/user-info";
+import { UserContextMenuCommandInteraction } from "discord.js";
 import usersData from "../../models/users-data";
+import { safeReply } from "../../utils/reply-utils";
 import errorMessages from "../../views/messages/error-messages";
 import messages from "../../views/messages/messages";
 

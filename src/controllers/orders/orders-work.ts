@@ -1,23 +1,23 @@
 import { ButtonInteraction, ComponentType } from "discord.js";
 import client from "../../client";
 import config from "../../config";
-import { OrderType } from "../../types/order";
-import messages from "../../views/messages/messages";
-import errorMessages from "../../views/messages/error-messages";
-import { safeDeleteReply, safeReply } from "../../utils/reply-utils";
-import ordersData from "../../models/orders-data";
-import { orderRoles } from "../../constants/orders/order-roles";
 import {
 	ORDERS_LIST_NEXT_BUTTON_ID,
 	ORDERS_LIST_PREV_BUTTON_ID,
 	ORDERS_LIST_TAKE_BUTTON_ID
 } from "../../constants/component-ids";
-import { awaitWithAbort } from "../../utils/await-utils";
-import { ORDERS_LIST_TIMEOUT } from "../../constants/timeouts";
-import { getNextPage, getPrevPage } from "../../utils/page-utils";
-import { deleteMsgFlags } from "../../utils/message-utils";
-import rateLimit from "../../utils/rate-limit";
+import { orderRoles } from "../../constants/orders/order-roles";
 import { VIEW_ORDERS_BUTTON_RATE_LIMIT } from "../../constants/rate-limits";
+import { ORDERS_LIST_TIMEOUT } from "../../constants/timeouts";
+import ordersData from "../../models/orders-data";
+import { OrderType } from "../../types/order";
+import { awaitWithAbort } from "../../utils/await-utils";
+import { deleteMsgFlags } from "../../utils/message-utils";
+import { getNextPage, getPrevPage } from "../../utils/page-utils";
+import rateLimit from "../../utils/rate-limit";
+import { safeDeleteReply, safeReply } from "../../utils/reply-utils";
+import errorMessages from "../../views/messages/error-messages";
+import messages from "../../views/messages/messages";
 
 export async function sendOrder(orderType: OrderType) {
 	try {

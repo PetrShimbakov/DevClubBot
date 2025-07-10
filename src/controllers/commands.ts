@@ -1,17 +1,17 @@
 import {
 	ChatInputCommandInteraction,
 	ContextMenuCommandInteraction,
-	UserContextMenuCommandInteraction,
-	MessageContextMenuCommandInteraction
+	MessageContextMenuCommandInteraction,
+	UserContextMenuCommandInteraction
 } from "discord.js";
-import slashCommands from "../commands/slash-commands";
-import contextMenuCommands from "../commands/context-menu-commands";
 import { CommandsBuilder } from "../commands/commands-builder";
-import errorMessages from "../views/messages/error-messages";
-import { safeReply } from "../utils/reply-utils";
+import contextMenuCommands from "../commands/context-menu-commands";
+import slashCommands from "../commands/slash-commands";
+import { COMMANDS_RATE_LIMIT } from "../constants/rate-limits";
 import { Command } from "../types/commands";
 import rateLimit from "../utils/rate-limit";
-import { COMMANDS_RATE_LIMIT } from "../constants/rate-limits";
+import { safeReply } from "../utils/reply-utils";
+import errorMessages from "../views/messages/error-messages";
 
 type CommandHandlerInteraction =
 	| ChatInputCommandInteraction<"cached">

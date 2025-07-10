@@ -1,7 +1,7 @@
 import { Collection, UpdateFilter } from "mongodb";
-import { IUserData, RoleData } from "../types/user-data";
-import { getDataBase } from "../database/mongo";
 import { USERS_COLLECTION } from "../constants/db-collection-names";
+import { getDataBase } from "../database/mongo";
+import { IUserData, RoleData } from "../types/user-data";
 
 class UsersData {
 	private _collection?: Collection<IUserData>;

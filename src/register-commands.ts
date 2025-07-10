@@ -1,8 +1,8 @@
 import { REST } from "discord.js";
+import { CommandsBuilder } from "./commands/commands-builder";
+import contextMenuCommands from "./commands/context-menu-commands";
 import slashCommands from "./commands/slash-commands";
 import config from "./config";
-import contextMenuCommands from "./commands/context-menu-commands";
-import { CommandsBuilder } from "./commands/commands-builder";
 
 const rest = new REST().setToken(config.bot.token);
 const commands = CommandsBuilder.combine(slashCommands, contextMenuCommands);

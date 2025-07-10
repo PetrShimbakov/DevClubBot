@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
-import { ORDER_MODAL_ID, ORDER_DESCRIPTION_INPUT_ID, ORDER_BUDGET_INPUT_ID } from "../../../constants/component-ids";
-import { OrderType } from "../../../types/order";
+import { ORDER_BUDGET_INPUT_ID, ORDER_DESCRIPTION_INPUT_ID, ORDER_MODAL_ID } from "../../../constants/component-ids";
 import { orderLabels } from "../../../constants/orders/order-labels";
+import { OrderType } from "../../../types/order";
 
 export function getOrderModal(orderType: OrderType): ModalBuilder {
 	return new ModalBuilder()

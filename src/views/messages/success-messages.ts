@@ -1,5 +1,4 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
-import config from "../../config";
 import { roleLabels } from "../../constants/role-labels";
 
 class SuccessMessages {
