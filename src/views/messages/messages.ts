@@ -1,4 +1,4 @@
-import { ActionRowBuilder, InteractionReplyOptions, MessageCreateOptions, MessageFlags } from "discord.js";
+import { ActionRowBuilder, InteractionReplyOptions, MessageCreateOptions, MessageFlags, User } from "discord.js";
 import { IUserData } from "../../types/user-data";
 import getRoleSelectMenu from "../select-menus/roles";
 import { OrderData, OrderType } from "../../types/order";
@@ -6,8 +6,13 @@ import { getOrdersListEmbed } from "../embeds/orders/orders-work";
 import { ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
 import { getOrderTypeSelectMenu } from "../select-menus/orders/orders-manage";
 import { orderRoles } from "../../constants/orders/order-roles";
-import { myOrdersListButtons } from "../buttons/orders/orders-manage";
-import { getMyOrdersListEmbed } from "../embeds/orders/orders-manage";
+import { myOrdersListButtons, orderMenuButtons } from "../buttons/orders/orders-manage";
+import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
+import getUserInfoEmbed from "../embeds/user-info";
+import rolesEmbed from "../embeds/roles";
+import roleSelectButton from "../buttons/roles";
+import bioUpdateButton from "../buttons/bio";
+import rulesEmbed from "../embeds/rules";
 
 class Messages {
 	public roleSelection(userId: string, userData?: IUserData): InteractionReplyOptions {
@@ -52,6 +57,25 @@ class Messages {
 			components: [new ActionRowBuilder().addComponents(viewOrdersListButton).toJSON()]
 		};
 	}
+
+	public userInfo(userData: IUserData, target: User): InteractionReplyOptions {
+		return {
+			embeds: [getUserInfoEmbed(userData, target)],
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
+	public readonly orderMenu: MessageCreateOptions = {
+		embeds: [orderMenuEmbed],
+		components: [orderMenuButtons.toJSON()]
+	};
+
+	public readonly roles: MessageCreateOptions = {
+		embeds: [rolesEmbed],
+		components: [new ActionRowBuilder().addComponents(roleSelectButton, bioUpdateButton).toJSON()]
+	};
+
+	public readonly rules: MessageCreateOptions = { embeds: [rulesEmbed] };
 }
 
 const messages = new Messages();
