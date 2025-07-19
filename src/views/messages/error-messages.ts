@@ -1,6 +1,6 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
 import config from "../../config";
-import { roleOrderLimits } from "../../constants/orders/order-limits";
+import { roleOrderLimits, roleTakenOrdersLimits } from "../../constants/orders/order-limits";
 
 class ErrorMessages {
 	public readonly inDev: InteractionReplyOptions = {
@@ -68,6 +68,23 @@ class ErrorMessages {
 		flags: MessageFlags.Ephemeral
 	};
 
+	public readonly orderNotFound: InteractionReplyOptions = {
+		content:
+			"К сожалению, я не смог найти этот заказ в базе данных. Возможно, твое меню устарело — попробуй открыть его снова. 😔",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly orderIsAlreadyTaken: InteractionReplyOptions = {
+		content:
+			"Опоздал, кто-то уже ухватил этот заказ раньше тебя! В следующий раз будь расторопнее — попробуй обновить меню. 😏",
+		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly thisIsYourOrder: InteractionReplyOptions = {
+		content: "😅 Ого, решил сам себя нанять? Поверь, ты хорош, но брать собственные заказы — это уже перебор.",
+		flags: MessageFlags.Ephemeral
+	};
+
 	public tooLongBio(maxValue: number): InteractionReplyOptions {
 		return {
 			content: `Ты написал слишком длинную биографию, допускается не больше ${maxValue} символов.`,
@@ -81,6 +98,16 @@ class ErrorMessages {
 
 		return {
 			content: `У тебя уже открыто максимальное количество заказов — ${limit}. Если хочешь расширить свои возможности, приобрети пасс у владельца сервера <@1058787941364797490> — лимит станет ${superClientLimit}. Или просто забусти сервер, и тогда лимит вырастет до ${boosterLimit} на всё время действия буста!`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
+	public takenOrdersLimitReached(limit: number): InteractionReplyOptions {
+		const boosterLimit = roleTakenOrdersLimits[config.roleIds.booster];
+		const superDevLimit = roleTakenOrdersLimits[config.roleIds.superDev];
+
+		return {
+			content: `Ты уже взял максимальное количество заказов — ${limit}. Если хочешь расширить свои возможности, приобрети пасс у владельца сервера <@1058787941364797490> — лимит станет ${superDevLimit}. Или просто забусти сервер, и тогда лимит вырастет до ${boosterLimit} на всё время действия буста!`,
 			flags: MessageFlags.Ephemeral
 		};
 	}

@@ -161,14 +161,13 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 
 				switch (buttonInteraction.customId) {
 					case MY_ORDERS_LIST_REMOVE_BUTTON_ID:
-						const orderNumber = orders[currentPage - 1].orderNumber;
+						const currentOrder = orders[currentPage - 1];
 						const guild = client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId));
-						const channelId = orders[currentPage - 1].orderChannelId;
+						const channelId = currentOrder.orderChannelId;
 						const channel = guild.channels.cache.get(channelId) || (await guild.channels.fetch(channelId));
-
 						if (channel) await channel.delete();
-						await ordersData.removeOrder(userId, orderNumber);
-						await safeReply(interaction, successMessages.orderRemoved(orderNumber));
+						await ordersData.removeOrder(currentOrder.id);
+						await safeReply(interaction, successMessages.orderRemoved(currentOrder.orderNumber));
 						return await safeDeleteReply(interaction);
 					case MY_ORDERS_LIST_PREV_BUTTON_ID:
 					case MY_ORDERS_LIST_NEXT_BUTTON_ID:

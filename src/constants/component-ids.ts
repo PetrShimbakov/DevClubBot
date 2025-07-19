@@ -21,3 +21,5 @@ export const ORDERS_LIST_TAKE_BUTTON_ID = "orders-list-take-button";
 export const MY_ORDERS_LIST_PREV_BUTTON_ID = "my-orders-list-prev-button";
 export const MY_ORDERS_LIST_NEXT_BUTTON_ID = "my-orders-list-next-button";
 export const MY_ORDERS_LIST_REMOVE_BUTTON_ID = "my-orders-list-remove-button";
+export const ORDER_DONE_BUTTON_ID = "order-done-button:"; // order-done-button:<OrderID>
+export const ORDER_REJECT_BUTTON_ID = "order-reject-button:"; // order-reject-button:<OrderID>

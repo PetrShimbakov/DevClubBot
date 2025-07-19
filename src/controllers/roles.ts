@@ -1,11 +1,6 @@
 import { ButtonInteraction, ComponentType } from "discord.js";
 import config from "../config";
-import {
-	ROLE_REG_BEGINNER_INPUT_ID,
-	ROLE_REG_NAME_INPUT_ID,
-	ROLE_REGISTRATION_MODAL_ID,
-	ROLE_SELECT_MENU_ID
-} from "../constants/component-ids";
+import { ROLE_REG_BEGINNER_INPUT_ID, ROLE_REG_NAME_INPUT_ID, ROLE_REGISTRATION_MODAL_ID, ROLE_SELECT_MENU_ID } from "../constants/component-ids";
 import { ROLE_SELECT_BUTTON_RATE_LIMIT } from "../constants/rate-limits";
 import { ROLE_REGISTRATION_TIMEOUT } from "../constants/timeouts";
 import usersData from "../models/users-data";
@@ -18,9 +13,7 @@ import successMessages from "../views/messages/success-messages";
 import getRoleRegistrationModal from "../views/modals/registration";
 
 const roleSelectSessions = new AbortControllerMap();
-export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROLE_SELECT_BUTTON_RATE_LIMIT)(async function (
-	initialInteraction: ButtonInteraction<"cached">
-): Promise<void> {
+export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROLE_SELECT_BUTTON_RATE_LIMIT)(async function (initialInteraction: ButtonInteraction<"cached">): Promise<void> {
 	const userId = initialInteraction.user.id;
 	const member = initialInteraction.member;
 	const userData = await usersData.getUser(userId);
@@ -84,15 +77,10 @@ export const handleRoleSelectButton = rateLimit<ButtonInteraction<"cached">>(ROL
 
 		if (!userData) await usersData.addUser(userId, selectedName);
 
-		if (selectedRoleId === config.devRoleIds.client)
-			await usersData.addRole(userId, { roleId: selectedRoleId }, selectedName);
+		if (selectedRoleId === config.devRoleIds.client) await usersData.addRole(userId, { roleId: selectedRoleId }, selectedName);
 		else {
 			const normalizedInput = modalInteraction.fields.getTextInputValue(ROLE_REG_BEGINNER_INPUT_ID).trim().toLowerCase();
-			const isBeginner = ["да", "yes", "true"].includes(normalizedInput)
-				? true
-				: ["нет", "no", "false"].includes(normalizedInput)
-				? false
-				: null;
+			const isBeginner = ["да", "yes", "true"].includes(normalizedInput) ? true : ["нет", "no", "false"].includes(normalizedInput) ? false : null;
 
 			if (isBeginner === null) return safeReply(modalInteraction, errorMessages.badExperienceData);
 

@@ -2,6 +2,8 @@ import { Events } from "discord.js";
 import client from "../client";
 import {
 	CREATE_ORDER_BUTTON_ID,
+	ORDER_DONE_BUTTON_ID,
+	ORDER_REJECT_BUTTON_ID,
 	ROLE_SELECT_BUTTON_ID,
 	UPDATE_BIO_BUTTON_ID,
 	UPDATE_BIO_MODAL_ID,
@@ -10,7 +12,7 @@ import {
 import { handleUpdateBioButton, handleUpdateBioModal } from "../controllers/bio-update";
 import { handleCommand } from "../controllers/commands";
 import { handleCreateOrderButton, handleViewMyOrdersListButton } from "../controllers/orders/orders-manage";
-import { handleViewOrdersListButton } from "../controllers/orders/orders-work";
+import { handleOrderDoneButton, handleOrderRejectButton, handleViewOrdersListButton } from "../controllers/orders/orders-work";
 import { handleRoleSelectButton } from "../controllers/roles";
 import { VIEW_ORDERS_LIST_BUTTON_ID } from "./../constants/component-ids";
 
@@ -21,8 +23,7 @@ export default function handleInteractions() {
 
 		if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) return handleCommand(interaction);
 
-		if (interaction.isModalSubmit() && interaction.customId === UPDATE_BIO_MODAL_ID)
-			return handleUpdateBioModal(interaction);
+		if (interaction.isModalSubmit() && interaction.customId === UPDATE_BIO_MODAL_ID) return handleUpdateBioModal(interaction);
 
 		if (interaction.isButton()) {
 			switch (interaction.customId) {
@@ -37,6 +38,8 @@ export default function handleInteractions() {
 				case VIEW_ORDERS_LIST_BUTTON_ID:
 					return handleViewOrdersListButton(interaction);
 				default:
+					if (interaction.customId.startsWith(ORDER_DONE_BUTTON_ID)) return handleOrderDoneButton(interaction);
+					if (interaction.customId.startsWith(ORDER_REJECT_BUTTON_ID)) return handleOrderRejectButton(interaction);
 					break;
 			}
 		}

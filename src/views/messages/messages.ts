@@ -4,7 +4,7 @@ import { OrderData, OrderType } from "../../types/order";
 import { IUserData } from "../../types/user-data";
 import bioUpdateButton from "../buttons/bio";
 import { myOrdersListButtons, orderMenuButtons } from "../buttons/orders/orders-manage";
-import { ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
+import { getOrderTakenButtons, ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
 import roleSelectButton from "../buttons/roles";
 import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
 import { getOrdersListEmbed } from "../embeds/orders/orders-work";
@@ -55,6 +55,14 @@ class Messages {
 		return {
 			content: `🆕 ${pings}, у вас новый заказ! Нажмите кнопку ниже, чтобы увидеть все доступные вам заказы. Не затягивайте — кто-то может успеть взять заказ раньше!`,
 			components: [new ActionRowBuilder().addComponents(viewOrdersListButton).toJSON()]
+		};
+	}
+
+	public orderTaken(order: OrderData, userData: IUserData, user: User): MessageCreateOptions {
+		return {
+			content: `<@${order.userDiscordId}>, ваш заказ взял разработчик <@${order.takenBy}>. В этом чате вы можете обсудить детали работы. Когда заказ будет выполнен, нажмите кнопку ниже — после этого чат и вся переписка будут удалены. Ниже вы найдете информацию о разработчике.`,
+			components: [getOrderTakenButtons(order.id.toString()).toJSON()],
+			embeds: [getUserInfoEmbed(userData, user)]
 		};
 	}
 

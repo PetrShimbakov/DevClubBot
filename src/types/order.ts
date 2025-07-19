@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export enum OrderType {
 	Game = "game", // Игра целиком
 	Asset = "asset", // Модель Roblox, часть уровня, объект
@@ -14,6 +16,7 @@ export enum OrderType {
 }
 
 export interface OrderData {
+	id: ObjectId;
 	userDiscordId: string;
 	orderNumber: number; // Order's sequential number for this user (starts from 1).
 	type: OrderType;
@@ -23,4 +26,5 @@ export interface OrderData {
 	isTaken: boolean;
 	takenBy?: string;
 	orderChannelId: string;
+	orderTakenMessageId?: string;
 }

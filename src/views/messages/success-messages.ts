@@ -51,6 +51,13 @@ class SuccessMessages {
 		};
 	}
 
+	public orderTaken(channelId: string): InteractionReplyOptions {
+		return {
+			content: `Вы успешно взяли заказ, обсудить детали заказа можно в канале <#${channelId}>`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
 	public readonly bioUpdated: InteractionReplyOptions = {
 		content: "Ваша биография была успешно обновлена.",
 		flags: MessageFlags.Ephemeral
@@ -59,6 +66,11 @@ class SuccessMessages {
 	public readonly ordered: InteractionReplyOptions = {
 		content: "Ваш заказ принят, ожидайте дальнейших уведомлений.",
 		flags: MessageFlags.Ephemeral
+	};
+
+	public readonly orderRejected: InteractionReplyOptions = {
+		content:
+			"Ваш заказ был освобожден, это значит что он опять попал в список активных заказов и в ближайшее время заказ возьмет другой разработчик."
 	};
 }
 
