@@ -15,6 +15,7 @@ export const handleSupportButton = rateLimit<ButtonInteraction<"cached">>(SUPPOR
 	try {
 		const userData = await usersData.getUser(interaction.user.id);
 		if (!userData) return safeReply(interaction, errorMessages.notRegistered);
+		if (!userData.permissions.canWriteSupport) return safeReply(interaction, errorMessages.blockedFeature);
 		await interaction.showModal(supportModal);
 	} catch (error) {
 		console.error("[support-controller] Unknown error:", error);
@@ -24,6 +25,10 @@ export const handleSupportButton = rateLimit<ButtonInteraction<"cached">>(SUPPOR
 
 export const handleSupportModal = rateLimit<ModalSubmitInteraction<"cached">>(SUPPORT_MODAL_RATE_LIMIT)(async function (interaction: ModalSubmitInteraction<"cached">) {
 	try {
+		const userData = await usersData.getUser(interaction.user.id);
+		if (!userData) return safeReply(interaction, errorMessages.notRegistered);
+		if (!userData.permissions.canWriteSupport) return safeReply(interaction, errorMessages.blockedFeature);
+
 		const userInput = interaction.fields.getTextInputValue(SUPPORT_MESSAGE_INPUT_ID);
 		if (userInput.length > 500) return safeReply(interaction, errorMessages.tooSupportRequest(500));
 

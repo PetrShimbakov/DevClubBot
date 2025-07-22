@@ -23,6 +23,10 @@ export const MY_ORDERS_LIST_NEXT_BUTTON_ID = "my-orders-list-next-button";
 export const MY_ORDERS_LIST_REMOVE_BUTTON_ID = "my-orders-list-remove-button";
 export const ORDER_DONE_BUTTON_ID = "order-done-button:"; // order-done-button:<OrderID>
 export const ORDER_REJECT_BUTTON_ID = "order-reject-button:"; // order-reject-button:<OrderID>
+export const ORDERS_MODERATE_LIST_PREV_BUTTON_ID = "orders-moderate-list-prev-button";
+export const ORDERS_MODERATE_LIST_NEXT_BUTTON_ID = "orders-moderate-list-next-button";
+export const ORDERS_MODERATE_LIST_REMOVE_BUTTON_ID = "orders-moderate-list-remove-button";
+export const ORDERS_MODERATE_LIST_REMOVE_AND_BAN_BUTTON_ID = "orders-moderate-list-remove-and-ban-button";
 
 export const SUPPORT_BUTTON_ID = "support-button";
 export const SUPPORT_MODAL_ID = "support-modal";

@@ -12,6 +12,7 @@ import { DEFAULT_ORDER_LIMIT, roleOrderLimits } from "../../constants/orders/ord
 import { CREATE_ORDER_BUTTON_RATE_LIMIT, VIEW_MY_ORDERS_BUTTON_RATE_LIMIT } from "../../constants/rate-limits";
 import { MY_ORDERS_LIST_TIMEOUT, ORDER_CREATION_TIMEOUT } from "../../constants/timeouts";
 import ordersData from "../../models/orders-data";
+import usersData from "../../models/users-data";
 import { closeOrder } from "../../services/orders/close-order-service";
 import { createOrder } from "../../services/orders/create-order-service";
 import { OrderType } from "../../types/order";
@@ -38,6 +39,10 @@ export const handleCreateOrderButton = rateLimit<ButtonInteraction<"cached">>(CR
 	const abortController = createOrderSessions.start(userId);
 
 	try {
+		const userData = await usersData.getUser(userId);
+		if (!userData) return safeReply(initialInteraction, errorMessages.notRegistered);
+		if (!userData.permissions.canCreateOrders) return safeReply(initialInteraction, errorMessages.blockedFeature);
+
 		const ordersLimit = member.roles.cache.reduce((max, role) => Math.max(max, roleOrderLimits[role.id] ?? DEFAULT_ORDER_LIMIT), DEFAULT_ORDER_LIMIT);
 		if (userOrdersQty >= ordersLimit) return safeReply(initialInteraction, errorMessages.ordersLimitReached(ordersLimit));
 
@@ -115,6 +120,8 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 	const abortController = ordersListSessions.start(userId);
 
 	try {
+		if (!(await usersData.isUserRegistered(userId))) return safeReply(interaction, errorMessages.notRegistered);
+
 		const orders = await ordersData.getOrders(userId);
 		const ordersQty = orders.length;
 		let currentPage = 1;
@@ -147,7 +154,9 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 			switch (buttonInteraction.customId) {
 				case MY_ORDERS_LIST_REMOVE_BUTTON_ID:
 					const currentOrder = orders[currentPage - 1];
-					await closeOrder(currentOrder);
+					const realCurrentOrder = await ordersData.getOrder(currentOrder.id);
+					if (!realCurrentOrder) return safeReply(buttonInteraction, errorMessages.orderNotFound);
+					await closeOrder(realCurrentOrder);
 					await safeReply(interaction, successMessages.orderRemoved(currentOrder.orderNumber));
 					return await safeDeleteReply(interaction);
 				case MY_ORDERS_LIST_PREV_BUTTON_ID:

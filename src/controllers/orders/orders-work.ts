@@ -27,6 +27,8 @@ export const handleViewOrdersListButton = rateLimit<ButtonInteraction<"cached">>
 	const abortController = ordersListSessions.start(userId);
 
 	try {
+		if (!(await usersData.isUserRegistered(userId))) return safeReply(interaction, errorMessages.notRegistered);
+
 		const orders = await ordersData.getOrders();
 		const userRoles = interaction.member.roles.cache;
 		const availableOrders = orders.filter(order => orderRoles[order.type].some(roleId => userRoles.has(roleId) && !order.isTaken));
@@ -92,6 +94,7 @@ async function handleTakeOrderButton(interaction: ButtonInteraction<"cached">, o
 		if (orderData.isTaken) return safeReply(interaction, errorMessages.orderIsAlreadyTaken);
 		if (orderData.orderedBy === userId) return safeReply(interaction, errorMessages.thisIsYourOrder);
 		if (!userData) return safeReply(interaction, errorMessages.notRegistered);
+		if (!userData.permissions.canTakeOrders) return safeReply(interaction, errorMessages.blockedFeature);
 
 		await takeOrder(orderData, userData, interaction.user);
 

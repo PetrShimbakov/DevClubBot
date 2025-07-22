@@ -4,10 +4,12 @@ import { OrderData, OrderType } from "../../types/order";
 import { IUserData } from "../../types/user-data";
 import bioUpdateButton from "../buttons/bio";
 import { myOrdersListButtons, orderMenuButtons } from "../buttons/orders/orders-manage";
+import ordersModerateListButtons from "../buttons/orders/orders-moderate";
 import { getOrderTakenButtons, ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
 import roleSelectButton from "../buttons/roles";
 import supportButton from "../buttons/support";
 import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
+import { getOrdersModerateListEmbed } from "../embeds/orders/orders-moderate";
 import { getOrdersListEmbed } from "../embeds/orders/orders-work";
 import rolesEmbed from "../embeds/roles";
 import rulesEmbed from "../embeds/rules";
@@ -46,6 +48,14 @@ class Messages {
 		return {
 			components: [ordersListButtons.toJSON()],
 			embeds: [getOrdersListEmbed(orderData, currentPage, pagesQty)],
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
+	public ordersModerateList(orderData: OrderData, currentPage: number, pagesQty: number): InteractionReplyOptions {
+		return {
+			components: [ordersModerateListButtons.toJSON()],
+			embeds: [getOrdersModerateListEmbed(orderData, currentPage, pagesQty)],
 			flags: MessageFlags.Ephemeral
 		};
 	}

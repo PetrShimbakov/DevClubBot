@@ -23,6 +23,11 @@ class ErrorMessages {
 		flags: MessageFlags.Ephemeral
 	};
 
+	public readonly blockedFeature: InteractionReplyOptions = {
+		content: "Эта функция тебе больше не доступна. Плохое поведение имеет последствия — теперь посиди, подумай о своём. 😈",
+		flags: MessageFlags.Ephemeral
+	};
+
 	public readonly timeLimit: InteractionReplyOptions = {
 		content: "Время на заполнение анкеты истекло. Пока ты думал, мой процессор успел остынуть. 🥶",
 		flags: MessageFlags.Ephemeral
@@ -60,6 +65,10 @@ class ErrorMessages {
 
 	public readonly myOrdersNotFound: InteractionReplyOptions = {
 		content: "Ты пока ничего не заказывал.",
+		flags: MessageFlags.Ephemeral
+	};
+	public readonly ordersNotFound: InteractionReplyOptions = {
+		content: "Никто пока ничего не заказывал.",
 		flags: MessageFlags.Ephemeral
 	};
 

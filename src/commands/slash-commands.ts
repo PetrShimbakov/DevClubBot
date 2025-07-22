@@ -1,5 +1,7 @@
 import { SlashCommandBuilder, SlashCommandChannelOption, SlashCommandNumberOption } from "discord.js";
+import config from "../config";
 import clearChat from "../controllers/commands/clear-chat";
+import { moderateOrders } from "../controllers/commands/moderate-orders";
 import sendOrderMenu from "../controllers/commands/send-order-menu";
 import sendRoles from "../controllers/commands/send-roles";
 import sendRules from "../controllers/commands/send-rules";
@@ -53,6 +55,7 @@ const slashCommands = new CommandsBuilder<SlashCommand>()
 
 		clearChat,
 		[]
-	);
+	)
+	.addCommand(new SlashCommandBuilder().setName("moderate-orders").setDescription("Откроет меню для модерации заказов."), moderateOrders, [config.roleIds.moderator]);
 
 export default slashCommands;

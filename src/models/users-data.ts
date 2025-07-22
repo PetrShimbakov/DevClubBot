@@ -20,7 +20,12 @@ class UsersData {
 				name,
 				discordId,
 				createdAt: new Date(),
-				rolesData: []
+				rolesData: [],
+				permissions: {
+					canCreateOrders: true,
+					canTakeOrders: true,
+					canWriteSupport: true
+				}
 			});
 		} catch (error: any) {
 			if (error?.code === 11000) return; // MongoDB duplicate key error code
@@ -57,6 +62,23 @@ class UsersData {
 	public async updateBio(discordId: string, bio: string) {
 		const usersCollection = await this.getCollection();
 		await usersCollection.updateOne({ discordId }, { $set: { bio } });
+	}
+
+	// TODO: Добавить проверку доступа в контроллеры
+	public async disablePermission(discordId: string, permissionKey: keyof IUserData["permissions"]): Promise<void> {
+		const usersCollection = await this.getCollection();
+		await usersCollection.updateOne({ discordId }, { $set: { [`permissions.${permissionKey}`]: false } });
+	}
+
+	public async enablePermission(discordId: string, permissionKey: keyof IUserData["permissions"]): Promise<void> {
+		const usersCollection = await this.getCollection();
+		await usersCollection.updateOne({ discordId }, { $set: { [`permissions.${permissionKey}`]: true } });
+	}
+
+	public async isUserRegistered(discordId: string): Promise<boolean> {
+		const usersCollection = await this.getCollection();
+		const user = await usersCollection.findOne({ discordId });
+		return !!user;
 	}
 }
 
