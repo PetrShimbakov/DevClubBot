@@ -1,22 +1,33 @@
 import { Collection, ObjectId } from "mongodb";
-import { ORDERS_COLLECTION } from "../constants/db-collection-names";
+import { COUNTERS_COLLECTION, ORDERS_COLLECTION } from "../constants/db-collection-names";
+import { ORDER_COUNTER_KEY } from "../constants/db-keys";
 import { getDataBase } from "../database/mongo";
 import { OrderData, OrderType } from "../types/order";
 
 class OrdersData {
 	private _collection?: Collection<Omit<OrderData, "id">>;
+	private _countersCollection?: Collection<{ _id: string; seq: number }>;
 
 	private async getCollection(): Promise<Collection<Omit<OrderData, "id">>> {
-		return (
-			this._collection ?? (this._collection = (await getDataBase()).collection<Omit<OrderData, "id">>(ORDERS_COLLECTION))
-		);
+		if (this._collection) return this._collection;
+		const collection = (this._collection = (await getDataBase()).collection<Omit<OrderData, "id">>(ORDERS_COLLECTION));
+		collection.createIndex({ orderNumber: 1 }, { unique: true });
+		return collection;
+	}
+
+	private async getNextOrderNumber(): Promise<number> {
+		const db = await getDataBase();
+		const counters = this._countersCollection ?? (this._countersCollection = db.collection<{ _id: string; seq: number }>(COUNTERS_COLLECTION));
+		const result = await counters.findOneAndUpdate({ _id: ORDER_COUNTER_KEY }, { $inc: { seq: 1 } }, { upsert: true, returnDocument: "after" });
+		if (!result) throw new Error("Failed to get next order number: database counter document missing or malformed.");
+		return result.seq || 1;
 	}
 
 	private toOrderData(document: Omit<OrderData, "id"> & { _id: ObjectId }): OrderData {
 		return {
 			id: document._id,
 			type: document.type,
-			userDiscordId: document.userDiscordId,
+			orderedBy: document.orderedBy,
 			description: document.description,
 			budget: document.budget,
 			orderChannelId: document.orderChannelId,
@@ -28,22 +39,14 @@ class OrdersData {
 		};
 	}
 
-	public async addOrder(
-		type: OrderType,
-		userDiscordId: string,
-		description: string,
-		budget: string,
-		orderChannelId: string
-	): Promise<OrderData> {
+	public async addOrder(type: OrderType, orderedBy: string, description: string, budget: string, orderChannelId: string): Promise<OrderData> {
 		const collection = await this.getCollection();
-
-		const lastOrder = await collection.find({ userDiscordId }).sort({ orderNumber: -1 }).limit(1).next();
-		const nextOrderNumber = lastOrder ? lastOrder.orderNumber + 1 : 1;
+		const nextOrderNumber = await this.getNextOrderNumber();
 
 		try {
 			const result = await collection.insertOne({
 				type,
-				userDiscordId,
+				orderedBy,
 				description,
 				budget,
 				orderChannelId,
@@ -57,7 +60,7 @@ class OrdersData {
 		} catch (error: any) {
 			if (error?.code === 11000) {
 				// MongoDB duplicate key error code
-				const existingOrder = await collection.findOne({ userDiscordId, orderNumber: nextOrderNumber });
+				const existingOrder = await collection.findOne({ orderNumber: nextOrderNumber });
 				if (!existingOrder) throw new Error("Order not found after duplicate key error.");
 				return this.toOrderData(existingOrder);
 			}
@@ -70,20 +73,16 @@ class OrdersData {
 		const order = await collection.findOne({ _id: orderId });
 		if (!order) return;
 		await collection.deleteOne({ _id: orderId });
-		await collection.updateMany(
-			{ userDiscordId: order.userDiscordId, orderNumber: { $gt: order.orderNumber } },
-			{ $inc: { orderNumber: -1 } }
-		);
 	}
 
-	public async removeOrders(userDiscordId: string): Promise<void> {
+	public async removeOrders(orderedBy: string): Promise<void> {
 		const collection = await this.getCollection();
-		await collection.deleteMany({ userDiscordId });
+		await collection.deleteMany({ orderedBy });
 	}
 
-	public async getOrders(userDiscordId?: string): Promise<OrderData[]> {
+	public async getOrders(orderedBy?: string): Promise<OrderData[]> {
 		const collection = await this.getCollection();
-		const filter = userDiscordId ? { userDiscordId } : {};
+		const filter = orderedBy ? { orderedBy } : {};
 		return (await collection.find(filter).toArray()).map(document => this.toOrderData(document));
 	}
 
@@ -96,7 +95,7 @@ class OrdersData {
 
 	public async takeOrder(orderId: ObjectId, takenBy: string): Promise<void> {
 		const collection = await this.getCollection();
-		const result = await collection.updateOne({ _id: orderId, isTaken: false }, { $set: { isTaken: true, takenBy } });
+		const result = await collection.updateOne({ _id: orderId }, { $set: { isTaken: true, takenBy } });
 		if (result.matchedCount === 0) {
 			throw new Error("Order not found or already taken.");
 		}
@@ -104,18 +103,15 @@ class OrdersData {
 
 	public async rejectOrder(orderId: ObjectId): Promise<void> {
 		const collection = await this.getCollection();
-		const result = await collection.updateOne(
-			{ _id: orderId, isTaken: true },
-			{ $set: { isTaken: false }, $unset: { takenBy: "" } }
-		);
+		const result = await collection.updateOne({ _id: orderId }, { $set: { isTaken: false }, $unset: { takenBy: "" } });
 		if (result.matchedCount === 0) {
 			throw new Error("Order not found or not taken.");
 		}
 	}
 
-	public async countTakenOrdersByUser(userDiscordId: string): Promise<number> {
+	public async countTakenOrdersByUser(userId: string): Promise<number> {
 		const collection = await this.getCollection();
-		return collection.countDocuments({ takenBy: userDiscordId });
+		return collection.countDocuments({ takenBy: userId });
 	}
 
 	public async setOrderTakenMessageId(orderId: ObjectId, messageId: string): Promise<void> {

@@ -7,7 +7,10 @@ class UsersData {
 	private _collection?: Collection<IUserData>;
 
 	private async getCollection() {
-		return this._collection ?? (this._collection = (await getDataBase()).collection<IUserData>(USERS_COLLECTION));
+		if (this._collection) return this._collection;
+		const collection = (this._collection = (await getDataBase()).collection<IUserData>(USERS_COLLECTION));
+		collection.createIndex({ discordId: 1 }, { unique: true });
+		return collection;
 	}
 
 	public async addUser(discordId: string, name: string): Promise<void> {

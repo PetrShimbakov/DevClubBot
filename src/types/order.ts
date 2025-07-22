@@ -17,7 +17,7 @@ export enum OrderType {
 
 export interface OrderData {
 	id: ObjectId;
-	userDiscordId: string;
+	orderedBy: string;
 	orderNumber: number; // Order's sequential number for this user (starts from 1).
 	type: OrderType;
 	description: string;

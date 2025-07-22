@@ -13,7 +13,7 @@ export function getOrdersListEmbed(order: OrderData, currentPage: number, pagesQ
 		.setDescription(
 			[
 				`**Тип:** ${orderEmojis[order.type]} ${orderLabels[order.type]}`,
-				`**Автор:** <@${order.userDiscordId}>`,
+				`**Автор:** <@${order.orderedBy}>`,
 				`**Дата создания:** ${getDiscordDate(order.createdAt)}`,
 				`**Бюджет:** ${order.budget}`,
 				`**Описание:** ${order.description}`
