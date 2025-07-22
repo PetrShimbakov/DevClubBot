@@ -23,3 +23,7 @@ export const MY_ORDERS_LIST_NEXT_BUTTON_ID = "my-orders-list-next-button";
 export const MY_ORDERS_LIST_REMOVE_BUTTON_ID = "my-orders-list-remove-button";
 export const ORDER_DONE_BUTTON_ID = "order-done-button:"; // order-done-button:<OrderID>
 export const ORDER_REJECT_BUTTON_ID = "order-reject-button:"; // order-reject-button:<OrderID>
+
+export const SUPPORT_BUTTON_ID = "support-button";
+export const SUPPORT_MODAL_ID = "support-modal";
+export const SUPPORT_MESSAGE_INPUT_ID = "message";

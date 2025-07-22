@@ -90,6 +90,13 @@ class ErrorMessages {
 		};
 	}
 
+	public tooSupportRequest(maxValue: number): InteractionReplyOptions {
+		return {
+			content: `Ты написал слишком длинное обращение к администрации, допускается не больше ${maxValue} символов.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
 	public ordersLimitReached(limit: number): InteractionReplyOptions {
 		const boosterLimit = roleOrderLimits[config.roleIds.booster];
 		const superClientLimit = roleOrderLimits[config.roleIds.superClient];

@@ -5,6 +5,8 @@ import {
 	ORDER_DONE_BUTTON_ID,
 	ORDER_REJECT_BUTTON_ID,
 	ROLE_SELECT_BUTTON_ID,
+	SUPPORT_BUTTON_ID,
+	SUPPORT_MODAL_ID,
 	UPDATE_BIO_BUTTON_ID,
 	UPDATE_BIO_MODAL_ID,
 	VIEW_MY_ORDERS_BUTTON_ID
@@ -14,6 +16,7 @@ import { handleCommand } from "../controllers/commands";
 import { handleCreateOrderButton, handleViewMyOrdersListButton } from "../controllers/orders/orders-manage";
 import { handleOrderDoneButton, handleOrderRejectButton, handleViewOrdersListButton } from "../controllers/orders/orders-work";
 import { handleRoleSelectButton } from "../controllers/roles";
+import { handleSupportButton, handleSupportModal } from "../controllers/support";
 import { VIEW_ORDERS_LIST_BUTTON_ID } from "./../constants/component-ids";
 
 export default function handleInteractions() {
@@ -23,7 +26,16 @@ export default function handleInteractions() {
 
 		if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) return handleCommand(interaction);
 
-		if (interaction.isModalSubmit() && interaction.customId === UPDATE_BIO_MODAL_ID) return handleUpdateBioModal(interaction);
+		if (interaction.isModalSubmit()) {
+			switch (interaction.customId) {
+				case UPDATE_BIO_MODAL_ID:
+					return handleUpdateBioModal(interaction);
+				case SUPPORT_MODAL_ID:
+					return handleSupportModal(interaction);
+				default:
+					break;
+			}
+		}
 
 		if (interaction.isButton()) {
 			switch (interaction.customId) {
@@ -31,6 +43,8 @@ export default function handleInteractions() {
 					return handleRoleSelectButton(interaction);
 				case UPDATE_BIO_BUTTON_ID:
 					return handleUpdateBioButton(interaction);
+				case SUPPORT_BUTTON_ID:
+					return handleSupportButton(interaction);
 				case CREATE_ORDER_BUTTON_ID:
 					return handleCreateOrderButton(interaction);
 				case VIEW_MY_ORDERS_BUTTON_ID:

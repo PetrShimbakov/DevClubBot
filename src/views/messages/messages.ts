@@ -6,10 +6,13 @@ import bioUpdateButton from "../buttons/bio";
 import { myOrdersListButtons, orderMenuButtons } from "../buttons/orders/orders-manage";
 import { getOrderTakenButtons, ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
 import roleSelectButton from "../buttons/roles";
+import supportButton from "../buttons/support";
 import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
 import { getOrdersListEmbed } from "../embeds/orders/orders-work";
 import rolesEmbed from "../embeds/roles";
 import rulesEmbed from "../embeds/rules";
+import supportEmbed from "../embeds/support";
+import { getSupportRequestEmbed } from "../embeds/support-request";
 import getUserInfoEmbed from "../embeds/user-info";
 import { getOrderTypeSelectMenu } from "../select-menus/orders/orders-manage";
 import getRoleSelectMenu from "../select-menus/roles";
@@ -24,6 +27,12 @@ class Messages {
 		};
 	}
 
+	public supportRequest(userId: string, message: string): MessageCreateOptions {
+		return {
+			content: "@everyone",
+			embeds: [getSupportRequestEmbed(userId, message)]
+		};
+	}
 	public orderTypeSelection(userId: string): InteractionReplyOptions {
 		return {
 			content: `<@${userId}>, выберите что будете заказывать.`,
@@ -87,6 +96,11 @@ class Messages {
 	public readonly roles: MessageCreateOptions = {
 		embeds: [rolesEmbed],
 		components: [new ActionRowBuilder().addComponents(roleSelectButton, bioUpdateButton).toJSON()]
+	};
+
+	public readonly support: MessageCreateOptions = {
+		embeds: [supportEmbed],
+		components: [new ActionRowBuilder().addComponents(supportButton).toJSON()]
 	};
 
 	public readonly rules: MessageCreateOptions = { embeds: [rulesEmbed] };

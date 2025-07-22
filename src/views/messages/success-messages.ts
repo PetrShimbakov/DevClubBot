@@ -22,6 +22,12 @@ class SuccessMessages {
 			flags: MessageFlags.Ephemeral
 		};
 	}
+	public supportSent(channelId: string): InteractionReplyOptions {
+		return {
+			content: `Я успешно отправил меню для обращения в поддержку в указанный вами канал <#${channelId}>.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
 
 	public rolesSent(channelId: string): InteractionReplyOptions {
 		return {
@@ -69,8 +75,12 @@ class SuccessMessages {
 	};
 
 	public readonly orderRejected: InteractionReplyOptions = {
-		content:
-			"Ваш заказ был освобожден, это значит что он опять попал в список активных заказов и в ближайшее время заказ возьмет другой разработчик."
+		content: "Ваш заказ был освобожден, это значит что он опять попал в список активных заказов и в ближайшее время заказ возьмет другой разработчик."
+	};
+
+	public readonly supportRequestSent: InteractionReplyOptions = {
+		content: "Ваше сообщение успешно отправлено в поддержку. Спасибо за обращение!",
+		flags: MessageFlags.Ephemeral
 	};
 }
 
