@@ -1,4 +1,6 @@
 import { ActionRowBuilder, InteractionReplyOptions, MessageCreateOptions, MessageFlags, User } from "discord.js";
+import config from "../../config";
+import { roleOrderLimits, roleTakenOrdersLimits } from "../../constants/orders/order-limits";
 import { orderRoles } from "../../constants/orders/order-roles";
 import { OrderData, OrderType } from "../../types/order";
 import { IUserData } from "../../types/user-data";
@@ -135,6 +137,30 @@ class Messages {
 	};
 
 	public readonly rules: MessageCreateOptions = { embeds: [rulesEmbed] };
+
+	public readonly priceList: MessageCreateOptions = {
+		content: `
+# 📋 Прайс-лист сервера
+
+**Оплата:** USDT (криптовалюта), PayPal, Robux.  
+Для покупки роли пишите в личные сообщения: <@1058787941364797490>.
+
+### 💎 Донат-роль \`Super Client\`
+**Привилегии:** Возможность одновременно создавать до **${roleOrderLimits[config.roleIds.superClient]}** заказов  
+**Стоимость:** 9 USD | 800 Robux
+**Срок:** Роль выдаётся навсегда
+
+### 💻 Донат-роль \`Super Developer\`
+**Привилегии:** Возможность одновременно брать до **${roleTakenOrdersLimits[config.roleIds.superDev]}** заказов  
+**Стоимость:** 9 USD | 800 Robux
+**Срок:** Роль выдаётся навсегда
+
+### 🚀 Донат-роль \`Server Booster\`
+**Привилегии:** Возможность одновременно создавать до **${roleOrderLimits[config.roleIds.booster]}** заказов и брать до **${roleTakenOrdersLimits[config.roleIds.booster]}** заказов  
+**Стоимость:** Boost этого сервера  
+**Срок:** На всё время действия буста
+`
+	};
 }
 
 const messages = new Messages();

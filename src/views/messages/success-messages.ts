@@ -35,6 +35,12 @@ class SuccessMessages {
 			flags: MessageFlags.Ephemeral
 		};
 	}
+	public priceListSent(channelId: string): InteractionReplyOptions {
+		return {
+			content: `Я успешно отправил прайс-лист в указанный вами канал <#${channelId}>.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
 
 	public orderMenuSent(channelId: string): InteractionReplyOptions {
 		return {

@@ -3,6 +3,7 @@ import config from "../config";
 import clearChat from "../controllers/commands/clear-chat";
 import { moderateOrders } from "../controllers/commands/moderate-orders";
 import sendOrderMenu from "../controllers/commands/send-order-menu";
+import sendPriceList from "../controllers/commands/send-price-list";
 import sendRoles from "../controllers/commands/send-roles";
 import sendRules from "../controllers/commands/send-rules";
 import sendSupport from "../controllers/commands/send-support";
@@ -44,6 +45,15 @@ const slashCommands = new CommandsBuilder<SlashCommand>()
 			.setDescription("Отошлет меню для обращения в поддержку в указанный канал.")
 			.addChannelOption(new SlashCommandChannelOption().setName("target-channel").setDescription("Канал, в который будет отправлено меню.").setRequired(true)),
 		sendSupport,
+		[]
+	)
+
+	.addCommand(
+		new SlashCommandBuilder()
+			.setName("send-price-list")
+			.setDescription("Отошлет прайс-лист в указанный канал.")
+			.addChannelOption(new SlashCommandChannelOption().setName("target-channel").setDescription("Канал, в который будет отправлен прайс-лист.").setRequired(true)),
+		sendPriceList,
 		[]
 	)
 
