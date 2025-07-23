@@ -8,7 +8,7 @@ export default function handleMemberRemove() {
 	client.on(Events.GuildMemberRemove, async member => {
 		const userId = member.user.id;
 
-		await usersData.removeUser(userId).catch(error => {
+		await usersData.handleUserLeftServer(userId).catch(error => {
 			console.error(`[member-removed-handler] Failed to remove user '${userId}' from database:`, error);
 		});
 
@@ -16,9 +16,7 @@ export default function handleMemberRemove() {
 			const guild = client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId));
 			const orders = await ordersData.getOrders(userId);
 			for (const order of orders) {
-				const channel =
-					guild.channels.cache.get(order.orderChannelId) ||
-					(await guild.channels.fetch(order.orderChannelId).catch(() => null));
+				const channel = guild.channels.cache.get(order.orderChannelId) || (await guild.channels.fetch(order.orderChannelId).catch(() => null));
 				if (channel) {
 					await channel.delete(`Пользователь вышел с сервера, заказ #${order.orderNumber} удалён`);
 				}

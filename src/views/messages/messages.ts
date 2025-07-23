@@ -8,14 +8,16 @@ import ordersModerateListButtons from "../buttons/orders/orders-moderate";
 import { getOrderTakenButtons, ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
 import roleSelectButton from "../buttons/roles";
 import supportButton from "../buttons/support";
+import userModerateButtons from "../buttons/user-moderate";
 import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
-import { getOrdersModerateListEmbed } from "../embeds/orders/orders-moderate";
+import { getOrderModLogEmbed, getOrdersModerateListEmbed, getUserModLogEmbed } from "../embeds/orders/orders-moderate";
 import { getOrdersListEmbed } from "../embeds/orders/orders-work";
 import rolesEmbed from "../embeds/roles";
 import rulesEmbed from "../embeds/rules";
 import supportEmbed from "../embeds/support";
 import { getSupportRequestEmbed } from "../embeds/support-request";
 import getUserInfoEmbed from "../embeds/user-info";
+import getUserModerateEmbed from "../embeds/user-moderate";
 import { getOrderTypeSelectMenu } from "../select-menus/orders/orders-manage";
 import getRoleSelectMenu from "../select-menus/roles";
 
@@ -48,6 +50,13 @@ class Messages {
 		return {
 			components: [ordersListButtons.toJSON()],
 			embeds: [getOrdersListEmbed(orderData, currentPage, pagesQty)],
+			flags: MessageFlags.Ephemeral
+		};
+	}
+	public userModerate(user: User, permissions: IUserData["permissions"]): InteractionReplyOptions {
+		return {
+			components: [userModerateButtons(permissions)],
+			embeds: [getUserModerateEmbed(user)],
 			flags: MessageFlags.Ephemeral
 		};
 	}
@@ -95,6 +104,18 @@ class Messages {
 		return {
 			embeds: [getUserInfoEmbed(userData, target)],
 			flags: MessageFlags.Ephemeral
+		};
+	}
+	public orderModLog(order: OrderData, moderator: User, success: boolean, withBan: boolean): MessageCreateOptions {
+		return {
+			content: "@everyone",
+			embeds: [getOrderModLogEmbed(order, moderator, success, withBan)]
+		};
+	}
+	public userModLog(user: User, moderator: User, permissionType: keyof IUserData["permissions"], isBan: boolean): MessageCreateOptions {
+		return {
+			content: "@everyone",
+			embeds: [getUserModLogEmbed(user, moderator, permissionType, isBan)]
 		};
 	}
 

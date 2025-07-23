@@ -3,3 +3,4 @@ export const ORDER_CREATION_TIMEOUT = 120_000; // 2 min (order selection, order 
 export const ORDERS_LIST_TIMEOUT = 300_000; // 5 min (auto-close orders list on inactivity)
 export const MY_ORDERS_LIST_TIMEOUT = 300_000; // 5 min (auto-close orders list on inactivity)
 export const ORDERS_MODERATE_LIST_TIMEOUT = 300_000; // 5 min (auto-close orders list on inactivity)
+export const USER_MODERATE_TIMEOUT = 60_000; // 1 min (auto-close user moderate menu on inactivity)

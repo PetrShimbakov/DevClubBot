@@ -64,7 +64,6 @@ class UsersData {
 		await usersCollection.updateOne({ discordId }, { $set: { bio } });
 	}
 
-	// TODO: Добавить проверку доступа в контроллеры
 	public async disablePermission(discordId: string, permissionKey: keyof IUserData["permissions"]): Promise<void> {
 		const usersCollection = await this.getCollection();
 		await usersCollection.updateOne({ discordId }, { $set: { [`permissions.${permissionKey}`]: false } });
@@ -79,6 +78,22 @@ class UsersData {
 		const usersCollection = await this.getCollection();
 		const user = await usersCollection.findOne({ discordId });
 		return !!user;
+	}
+
+	public async handleUserLeftServer(discordId: string): Promise<void> {
+		const usersCollection = await this.getCollection();
+
+		const user = await usersCollection.findOne({ discordId });
+		if (!user) return;
+
+		const perms = user.permissions;
+		const allPermissionsTrue = perms && perms.canCreateOrders === true && perms.canTakeOrders === true && perms.canWriteSupport === true;
+
+		if (allPermissionsTrue) {
+			await usersCollection.deleteOne({ discordId });
+		} else {
+			await usersCollection.updateOne({ discordId }, { $set: { rolesData: [], bio: "" } });
+		}
 	}
 }
 

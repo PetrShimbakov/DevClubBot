@@ -1,10 +1,4 @@
-import {
-	ApplicationCommandType,
-	ChatInputCommandInteraction,
-	ContextMenuCommandBuilder,
-	ContextMenuCommandInteraction,
-	SlashCommandOptionsOnlyBuilder
-} from "discord.js";
+import { ApplicationCommandType, ChatInputCommandInteraction, ContextMenuCommandBuilder, ContextMenuCommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import config from "../config";
 
 interface BaseCommand<TData, TInteraction> {

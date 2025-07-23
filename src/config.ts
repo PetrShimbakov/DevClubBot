@@ -20,7 +20,8 @@ class Config {
 
 	public readonly channels = {
 		ordersList: getEnvVar("ORDERS_LIST_CHANNEL_ID"),
-		supportLog: getEnvVar("SUPPORT_LOG_CHANNEL_ID")
+		supportLog: getEnvVar("SUPPORT_LOG_CHANNEL_ID"),
+		modLog: getEnvVar("MOD_LOG_CHANNEL_ID")
 	};
 
 	public readonly categories = {
@@ -71,7 +72,7 @@ class Config {
 function getEnvVar(name: keyof typeof process.env): string {
 	const envVar = process.env[name];
 	if (typeof envVar === "string") return envVar;
-	throw new Error(`Environment variable ${name} is required but was not provided.`);
+	throw new Error(`[config] Environment variable ${name} is required but was not provided.`);
 }
 
 export default Config.get();

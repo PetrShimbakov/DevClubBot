@@ -56,6 +56,7 @@ const slashCommands = new CommandsBuilder<SlashCommand>()
 		clearChat,
 		[]
 	)
+
 	.addCommand(new SlashCommandBuilder().setName("moderate-orders").setDescription("Откроет меню для модерации заказов."), moderateOrders, [config.roleIds.moderator]);
 
 export default slashCommands;

@@ -9,6 +9,7 @@ import {
 import { ORDERS_MODERATE_LIST_TIMEOUT } from "../../constants/timeouts";
 import ordersData from "../../models/orders-data";
 import usersData from "../../models/users-data";
+import { sendModLog } from "../../services/mod-log-service";
 import { closeOrder } from "../../services/orders/close-order-service";
 import { AbortControllerMap, awaitWithAbort } from "../../utils/abort-utils";
 import { deleteMsgFlags } from "../../utils/message-utils";
@@ -62,13 +63,26 @@ export async function moderateOrders(interaction: ChatInputCommandInteraction<"c
 						const currentOrder = orders[currentPage - 1];
 						const realCurrentOrder = await ordersData.getOrder(currentOrder.id);
 						if (!realCurrentOrder) return safeReply(buttonInteraction, errorMessages.orderNotFound);
-						await closeOrder(realCurrentOrder);
-						if (buttonInteraction.customId === ORDERS_MODERATE_LIST_REMOVE_AND_BAN_BUTTON_ID)
-							await usersData.disablePermission(realCurrentOrder.orderedBy, "canCreateOrders").catch(err => {
-								console.error(`[moderate-orders-command-controller] Cannot disable canCreateOrders permission for user ${buttonInteraction.user.id}:`, err);
-								throw err;
-							});
-						safeReply(buttonInteraction, successMessages.orderRemoved(realCurrentOrder.orderNumber));
+
+						let success = true;
+						const withBan = buttonInteraction.customId === ORDERS_MODERATE_LIST_REMOVE_AND_BAN_BUTTON_ID;
+
+						try {
+							await closeOrder(realCurrentOrder);
+							if (withBan)
+								await usersData.disablePermission(realCurrentOrder.orderedBy, "canCreateOrders").catch(err => {
+									console.error(`[moderate-orders-command-controller] Cannot disable canCreateOrders permission for user ${buttonInteraction.user.id}:`, err);
+									throw err;
+								});
+						} catch (err) {
+							success = false;
+							throw err;
+						} finally {
+							await sendModLog(messages.orderModLog(realCurrentOrder, buttonInteraction.user, success, withBan));
+						}
+
+						await safeReply(buttonInteraction, successMessages.orderRemoved(realCurrentOrder.orderNumber));
+						return safeDeleteReply(interaction);
 					} else safeReply(buttonInteraction, errorMessages.noRights);
 					break;
 				case ORDERS_MODERATE_LIST_PREV_BUTTON_ID:
