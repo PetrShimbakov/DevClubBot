@@ -5,9 +5,11 @@
 	"license": "ISC",
 	"author": "Petr Shimbakov",
 	"type": "commonjs",
-	"main": "app.ts",
+	"main": "dist/app.js",
 	"scripts": {
+		"build": "tsc",
 		"start": "node dist/app.js",
+		"start:pm2": "pm2 start dist/app.js --name dev-club-bot --output logs/out.log --error logs/error.log",
 		"dev": "ts-node-dev --respawn --transpile-only src/app.ts",
 		"register-commands": "node dist/register-commands.js",
 		"register-commands-dev": "ts-node src/register-commands.ts"
