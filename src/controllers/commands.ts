@@ -1,9 +1,4 @@
-import {
-	ChatInputCommandInteraction,
-	ContextMenuCommandInteraction,
-	MessageContextMenuCommandInteraction,
-	UserContextMenuCommandInteraction
-} from "discord.js";
+import { ChatInputCommandInteraction, ContextMenuCommandInteraction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 import { CommandsBuilder } from "../commands/commands-builder";
 import contextMenuCommands from "../commands/context-menu-commands";
 import slashCommands from "../commands/slash-commands";
@@ -13,14 +8,9 @@ import rateLimit from "../utils/rate-limit";
 import { safeReply } from "../utils/reply-utils";
 import errorMessages from "../views/messages/error-messages";
 
-type CommandHandlerInteraction =
-	| ChatInputCommandInteraction<"cached">
-	| UserContextMenuCommandInteraction<"cached">
-	| MessageContextMenuCommandInteraction<"cached">;
+type CommandHandlerInteraction = ChatInputCommandInteraction<"cached"> | UserContextMenuCommandInteraction<"cached"> | MessageContextMenuCommandInteraction<"cached">;
 
-export const handleCommand = rateLimit<CommandHandlerInteraction>(COMMANDS_RATE_LIMIT)(function (
-	interaction: CommandHandlerInteraction
-) {
+export const handleCommand = rateLimit<CommandHandlerInteraction>(COMMANDS_RATE_LIMIT)(function (interaction: CommandHandlerInteraction) {
 	const commands: CommandsBuilder<Command> = CommandsBuilder.combine(slashCommands, contextMenuCommands);
 	const command = commands.getCommand(interaction.commandName, interaction.commandType);
 
