@@ -12,7 +12,7 @@ import roleSelectButton from "../buttons/roles";
 import supportButton from "../buttons/support";
 import userModerateButtons from "../buttons/user-moderate";
 import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
-import { getOrderModLogEmbed, getOrdersModerateListEmbed, getUserModLogEmbed } from "../embeds/orders/orders-moderate";
+import { getOrderClosedLogEmbed, getOrderModLogEmbed, getOrdersModerateListEmbed, getUserModLogEmbed } from "../embeds/orders/orders-moderate";
 import { getOrdersListEmbed } from "../embeds/orders/orders-work";
 import rolesEmbed from "../embeds/roles";
 import rulesEmbed from "../embeds/rules";
@@ -118,6 +118,12 @@ class Messages {
 		return {
 			content: "@everyone",
 			embeds: [getUserModLogEmbed(user, moderator, permissionType, isBan)]
+		};
+	}
+	public orderClosedLog(order: OrderData, closedBy: string): MessageCreateOptions {
+		return {
+			content: "@everyone",
+			embeds: [getOrderClosedLogEmbed(order, closedBy)]
 		};
 	}
 

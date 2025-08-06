@@ -156,7 +156,7 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 					const currentOrder = orders[currentPage - 1];
 					const realCurrentOrder = await ordersData.getOrder(currentOrder.id);
 					if (!realCurrentOrder) return safeReply(buttonInteraction, errorMessages.orderNotFound);
-					await closeOrder(realCurrentOrder);
+					await closeOrder(realCurrentOrder, userId);
 					await safeReply(interaction, successMessages.orderRemoved(currentOrder.orderNumber));
 					return await safeDeleteReply(interaction);
 				case MY_ORDERS_LIST_PREV_BUTTON_ID:

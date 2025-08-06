@@ -21,7 +21,8 @@ class Config {
 	public readonly channels = {
 		ordersList: getEnvVar("ORDERS_LIST_CHANNEL_ID"),
 		supportLog: getEnvVar("SUPPORT_LOG_CHANNEL_ID"),
-		modLog: getEnvVar("MOD_LOG_CHANNEL_ID")
+		modLog: getEnvVar("MOD_LOG_CHANNEL_ID"),
+		orderLog: getEnvVar("ORDER_LOG_CHANNEL_ID")
 	};
 
 	public readonly categories = {

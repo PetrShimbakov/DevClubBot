@@ -84,3 +84,33 @@ export function getUserModLogEmbed(user: User, moderator: User, permissionType: 
 			.setTimestamp()
 			.setDescription([`**Снял:** <@${moderator.id}>`, `**Помилованный:** <@${user.id}>`, `**Блокировка:** ${permissionTypeLabels[permissionType]}`].filter(Boolean).join("\n"));
 }
+
+export function getOrderClosedLogEmbed(order: OrderData, closedBy: string) {
+	return new EmbedBuilder()
+		.setTitle(`Заказ №${order.orderNumber} закрыт`)
+		.setColor("#816CE0")
+
+		.addFields(
+			{
+				name: "📦 Подробности заказа:",
+				value: [
+					`**Номер:** ${order.orderNumber}`,
+					`**ID:** ${order.id}`,
+					`**Заказал:** <@${order.orderedBy}>`,
+					`**Тип:** ${orderEmojis[order.type]} ${orderLabels[order.type]}`,
+					`**Статус:** ${order.isTaken ? "В работе" : "Ожидание отклика"}`,
+					order.isTaken && `**Взял: <@${order.takenBy}>**`,
+					`**Дата создания:** ${getDiscordDate(order.createdAt)}`,
+					`**Бюджет:** ${order.budget}`,
+					`**Чат заказа:** <#${order.orderChannelId}>`,
+					`**Описание:** ${order.description}`
+				]
+					.filter(Boolean)
+					.join("\n")
+			},
+			{
+				name: "🏁 Подробности закрытия:",
+				value: [`**Закрыл:** <@${closedBy}>`, `**Дата:** ${getDiscordDate(new Date())}`].join("\n")
+			}
+		);
+}

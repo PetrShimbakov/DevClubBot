@@ -114,7 +114,7 @@ export const handleOrderDoneButton = rateLimit<ButtonInteraction<"cached">>(ORDE
 		if (!orderData) throw new Error(`Order not found in database. OrderId: ${orderId}`);
 		if (userId !== orderData.orderedBy && userId !== orderData.takenBy) return safeReply(interaction, errorMessages.noRights);
 
-		await closeOrder(orderData);
+		await closeOrder(orderData, userId);
 	} catch (error) {
 		console.error(`[orders-work-controller] handleOrderDoneButton: Unknown error for user ${interaction.user.id}:`, error);
 		return safeReply(interaction, errorMessages.unknown);

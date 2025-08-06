@@ -68,7 +68,7 @@ export async function moderateOrders(interaction: ChatInputCommandInteraction<"c
 						const withBan = buttonInteraction.customId === ORDERS_MODERATE_LIST_REMOVE_AND_BAN_BUTTON_ID;
 
 						try {
-							await closeOrder(realCurrentOrder);
+							await closeOrder(realCurrentOrder, userId);
 							if (withBan)
 								await usersData.disablePermission(realCurrentOrder.orderedBy, "canCreateOrders").catch(err => {
 									console.error(`[moderate-orders-command-controller] Cannot disable canCreateOrders permission for user ${buttonInteraction.user.id}:`, err);
