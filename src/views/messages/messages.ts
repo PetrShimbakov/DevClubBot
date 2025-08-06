@@ -1,16 +1,19 @@
 import { ActionRowBuilder, InteractionReplyOptions, MessageCreateOptions, MessageFlags, User } from "discord.js";
 import config from "../../config";
+import { confirmActionDescriptions } from "../../constants/confirm-action-descriptions";
 import { roleOrderLimits, roleTakenOrdersLimits } from "../../constants/orders/order-limits";
 import { orderRoles } from "../../constants/orders/order-roles";
 import { OrderData, OrderType } from "../../types/order";
 import { IUserData } from "../../types/user-data";
 import bioUpdateButton from "../buttons/bio";
+import confirmActionButtons from "../buttons/confirm-action";
 import { myOrdersListButtons, orderMenuButtons } from "../buttons/orders/orders-manage";
 import ordersModerateListButtons from "../buttons/orders/orders-moderate";
 import { getOrderTakenButtons, ordersListButtons, viewOrdersListButton } from "../buttons/orders/orders-work";
 import roleSelectButton from "../buttons/roles";
 import supportButton from "../buttons/support";
 import userModerateButtons from "../buttons/user-moderate";
+import { getConfirmActionEmbed } from "../embeds/confirm-action";
 import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
 import { getOrderClosedLogEmbed, getOrderModLogEmbed, getOrdersModerateListEmbed, getUserModLogEmbed } from "../embeds/orders/orders-moderate";
 import { getOrdersListEmbed } from "../embeds/orders/orders-work";
@@ -112,6 +115,13 @@ class Messages {
 		return {
 			content: "@everyone",
 			embeds: [getOrderModLogEmbed(order, moderator, success, withBan)]
+		};
+	}
+	public confirmAction(interactionId: string, description: keyof typeof confirmActionDescriptions): InteractionReplyOptions {
+		return {
+			embeds: [getConfirmActionEmbed(description)],
+			components: [confirmActionButtons(interactionId)],
+			flags: MessageFlags.Ephemeral
 		};
 	}
 	public userModLog(user: User, moderator: User, permissionType: keyof IUserData["permissions"], isBan: boolean): MessageCreateOptions {

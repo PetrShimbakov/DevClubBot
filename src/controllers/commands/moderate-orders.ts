@@ -12,6 +12,7 @@ import usersData from "../../models/users-data";
 import { sendModLog } from "../../services/mod-log-service";
 import { closeOrder } from "../../services/orders/close-order-service";
 import { AbortControllerMap, awaitWithAbort } from "../../utils/abort-utils";
+import { confirmAction } from "../../utils/confirm-action";
 import { deleteMsgFlags } from "../../utils/message-utils";
 import { getNextPage, getPrevPage } from "../../utils/page-utils";
 import { safeDeleteReply, safeReply } from "../../utils/reply-utils";
@@ -66,6 +67,9 @@ export async function moderateOrders(interaction: ChatInputCommandInteraction<"c
 
 						let success = true;
 						const withBan = buttonInteraction.customId === ORDERS_MODERATE_LIST_REMOVE_AND_BAN_BUTTON_ID;
+
+						const isConfirmed = await confirmAction(buttonInteraction, withBan ? "closeOrderAndBan" : "closeOrder");
+						if (!isConfirmed) continue;
 
 						try {
 							await closeOrder(realCurrentOrder, userId);

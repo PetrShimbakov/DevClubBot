@@ -17,6 +17,7 @@ import { closeOrder } from "../../services/orders/close-order-service";
 import { createOrder } from "../../services/orders/create-order-service";
 import { OrderType } from "../../types/order";
 import { AbortControllerMap, awaitWithAbort } from "../../utils/abort-utils";
+import { confirmAction } from "../../utils/confirm-action";
 import { deleteMsgFlags } from "../../utils/message-utils";
 import { getNextPage, getPrevPage } from "../../utils/page-utils";
 import rateLimit from "../../utils/rate-limit";
@@ -153,12 +154,16 @@ export const handleViewMyOrdersListButton = rateLimit<ButtonInteraction<"cached"
 
 			switch (buttonInteraction.customId) {
 				case MY_ORDERS_LIST_REMOVE_BUTTON_ID:
-					const currentOrder = orders[currentPage - 1];
-					const realCurrentOrder = await ordersData.getOrder(currentOrder.id);
-					if (!realCurrentOrder) return safeReply(buttonInteraction, errorMessages.orderNotFound);
-					await closeOrder(realCurrentOrder, userId);
-					await safeReply(interaction, successMessages.orderRemoved(currentOrder.orderNumber));
-					return await safeDeleteReply(interaction);
+					const isConfirmed = await confirmAction(buttonInteraction, "closeOrder");
+					if (isConfirmed) {
+						const currentOrder = orders[currentPage - 1];
+						const realCurrentOrder = await ordersData.getOrder(currentOrder.id);
+						if (!realCurrentOrder) return safeReply(buttonInteraction, errorMessages.orderNotFound);
+						await closeOrder(realCurrentOrder, userId);
+						await safeReply(interaction, successMessages.orderRemoved(currentOrder.orderNumber));
+						return await safeDeleteReply(interaction);
+					}
+					continue;
 				case MY_ORDERS_LIST_PREV_BUTTON_ID:
 				case MY_ORDERS_LIST_NEXT_BUTTON_ID:
 					currentPage = buttonInteraction.customId === MY_ORDERS_LIST_PREV_BUTTON_ID ? getPrevPage(currentPage, ordersQty) : getNextPage(currentPage, ordersQty);

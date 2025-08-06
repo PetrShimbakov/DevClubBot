@@ -34,3 +34,6 @@ export const SUPPORT_MESSAGE_INPUT_ID = "message";
 
 export const ENABLE_PERMISSION_BUTTON = "enable-permission-button:"; // enable-permission-button:<PermissionKey>
 export const DISABLE_PERMISSION_BUTTON = "disable-permission-button:"; // disable-permission-button:<PermissionKey>
+
+export const CONFIRM_ACTION_TRUE_BUTTON = "confirm-action-true-button:"; // confirm-action-true-button:<InteractionId>
+export const CONFIRM_ACTION_FALSE_BUTTON = "confirm-action-false-button:"; // confirm-action-false-button:<InteractionId>

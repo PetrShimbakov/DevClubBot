@@ -11,6 +11,7 @@ import { closeOrder } from "../../services/orders/close-order-service";
 import { rejectOrder } from "../../services/orders/reject-order-service";
 import { takeOrder } from "../../services/orders/take-order-service";
 import { AbortControllerMap, awaitWithAbort } from "../../utils/abort-utils";
+import { confirmAction } from "../../utils/confirm-action";
 import { deleteMsgFlags } from "../../utils/message-utils";
 import { getNextPage, getPrevPage } from "../../utils/page-utils";
 import rateLimit from "../../utils/rate-limit";
@@ -113,7 +114,8 @@ export const handleOrderDoneButton = rateLimit<ButtonInteraction<"cached">>(ORDE
 
 		if (!orderData) throw new Error(`Order not found in database. OrderId: ${orderId}`);
 		if (userId !== orderData.orderedBy && userId !== orderData.takenBy) return safeReply(interaction, errorMessages.noRights);
-
+		const isConfirmed = await confirmAction(interaction, "closeOrder");
+		if (!isConfirmed) return;
 		await closeOrder(orderData, userId);
 	} catch (error) {
 		console.error(`[orders-work-controller] handleOrderDoneButton: Unknown error for user ${interaction.user.id}:`, error);
@@ -130,8 +132,10 @@ export const handleOrderRejectButton = rateLimit<ButtonInteraction<"cached">>(OR
 		if (!orderData) throw new Error("Order not found in database.");
 		if (userId !== orderData.orderedBy && userId !== orderData.takenBy) return safeReply(interaction, errorMessages.noRights);
 
-		await rejectOrder(orderData);
+		const isConfirmed = await confirmAction(interaction, "rejectOrder");
+		if (!isConfirmed) return;
 
+		await rejectOrder(orderData);
 		safeReply(interaction, successMessages.orderRejected);
 	} catch (error) {
 		console.error(`[orders-work-controller] handleOrderRejectButton: Unknown error for user ${interaction.user.id}:`, error);

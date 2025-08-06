@@ -4,3 +4,4 @@ export const ORDERS_LIST_TIMEOUT = 300_000; // 5 min (auto-close orders list on 
 export const MY_ORDERS_LIST_TIMEOUT = 300_000; // 5 min (auto-close orders list on inactivity)
 export const ORDERS_MODERATE_LIST_TIMEOUT = 300_000; // 5 min (auto-close orders list on inactivity)
 export const USER_MODERATE_TIMEOUT = 60_000; // 1 min (auto-close user moderate menu on inactivity)
+export const CONFIRM_ACTION_TIMEOUT = 10_000; // 10 seconds
