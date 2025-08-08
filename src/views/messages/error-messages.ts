@@ -82,6 +82,11 @@ class ErrorMessages {
 		flags: MessageFlags.Ephemeral
 	};
 
+	public readonly orderIsDeleted: InteractionReplyOptions = {
+		content: "К сожалению, я не смог найти этот заказ в базе данных. Или произошел временный сбой или этот заказ был удален.",
+		flags: MessageFlags.Ephemeral
+	};
+
 	public readonly orderIsAlreadyTaken: InteractionReplyOptions = {
 		content: "Опоздал, кто-то уже ухватил этот заказ раньше тебя! В следующий раз будь расторопнее — попробуй обновить меню. 😏",
 		flags: MessageFlags.Ephemeral

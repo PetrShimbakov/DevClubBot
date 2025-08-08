@@ -112,7 +112,8 @@ export const handleOrderDoneButton = rateLimit<ButtonInteraction<"cached">>(ORDE
 		const orderId = new ObjectId(interaction.customId.replace(ORDER_DONE_BUTTON_ID, ""));
 		const orderData = await ordersData.getOrder(orderId);
 
-		if (!orderData) throw new Error(`Order not found in database. OrderId: ${orderId}`);
+		if (!orderData) return safeReply(interaction, errorMessages.orderIsDeleted);
+
 		if (userId !== orderData.orderedBy && userId !== orderData.takenBy) return safeReply(interaction, errorMessages.noRights);
 		const isConfirmed = await confirmAction(interaction, "closeOrder");
 		if (!isConfirmed) return;
@@ -129,7 +130,7 @@ export const handleOrderRejectButton = rateLimit<ButtonInteraction<"cached">>(OR
 		const orderId = new ObjectId(interaction.customId.replace(ORDER_REJECT_BUTTON_ID, ""));
 		const orderData = await ordersData.getOrder(orderId);
 
-		if (!orderData) throw new Error("Order not found in database.");
+		if (!orderData) return safeReply(interaction, errorMessages.orderIsDeleted);
 		if (userId !== orderData.orderedBy && userId !== orderData.takenBy) return safeReply(interaction, errorMessages.noRights);
 
 		const isConfirmed = await confirmAction(interaction, "rejectOrder");

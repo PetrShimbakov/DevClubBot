@@ -16,7 +16,7 @@ import userModerateButtons from "../buttons/user-moderate";
 import { getConfirmActionEmbed } from "../embeds/confirm-action";
 import { getMyOrdersListEmbed, orderMenuEmbed } from "../embeds/orders/orders-manage";
 import { getOrderClosedLogEmbed, getOrderModLogEmbed, getOrdersModerateListEmbed, getUserModLogEmbed } from "../embeds/orders/orders-moderate";
-import { getOrdersListEmbed } from "../embeds/orders/orders-work";
+import { getOrderCreatedEmbed, getOrderInfoEmbed, getOrdersListEmbed, getOrderTakenEmbed } from "../embeds/orders/orders-work";
 import rolesEmbed from "../embeds/roles";
 import rulesEmbed from "../embeds/rules";
 import supportEmbed from "../embeds/support";
@@ -91,17 +91,18 @@ class Messages {
 		};
 	}
 
-	public orderTaken(order: OrderData, userData: IUserData, user: User): MessageCreateOptions {
+	public orderTaken(order: OrderData, developerData: IUserData): MessageCreateOptions {
 		return {
-			content: `<@${order.orderedBy}>, ваш заказ взял разработчик <@${order.takenBy}>. В этом чате вы можете обсудить детали работы. Когда заказ будет выполнен, нажмите кнопку ниже — после этого чат и вся переписка будут удалены. Ниже вы найдете информацию о разработчике.`,
-			components: [getOrderTakenButtons(order.id.toString()).toJSON()],
-			embeds: [getUserInfoEmbed(userData, user)]
+			content: `<@${order.orderedBy}>, ваш заказ взял разработчик <@${order.takenBy}> в работу.`,
+			embeds: [getOrderTakenEmbed(developerData)],
+			components: [getOrderTakenButtons(order.id.toString()).toJSON()]
 		};
 	}
 
 	public newOrderChannelInfo(order: OrderData): MessageCreateOptions {
 		return {
-			content: `💼 Это приватный чат для <@${order.orderedBy}> и разработчика. Здесь вы можете обсудить детали заказа, задать любые вопросы, а также получить уведомление, когда ваш заказ возьмут в работу. Чтобы отменить заказ, перейдите в канал <#1272850187882205194>. Этот чат виден только вам, разработчику и модераторам.`
+			content: `<@${order.orderedBy}>`,
+			embeds: [getOrderCreatedEmbed(order)]
 		};
 	}
 
@@ -134,6 +135,24 @@ class Messages {
 		return {
 			content: "@everyone",
 			embeds: [getOrderClosedLogEmbed(order, closedBy)]
+		};
+	}
+	public orderClosedBySelf(order: OrderData): MessageCreateOptions {
+		return {
+			content: `Вы успешно закрыли заказ №${order.orderNumber}.`,
+			embeds: [getOrderInfoEmbed(order)]
+		};
+	}
+	public orderRejected(order: OrderData): MessageCreateOptions {
+		return {
+			content: `Заказ №${order.orderNumber} был возвращен в статус ожидание отклика, вы больше не работаете над этим заказом.`,
+			embeds: [getOrderInfoEmbed(order)]
+		};
+	}
+	public orderClosedByOther(order: OrderData, closedBy: string): MessageCreateOptions {
+		return {
+			content: `Пользователь <@${closedBy}> закрыл ваш заказ №${order.orderNumber}.`,
+			embeds: [getOrderInfoEmbed(order)]
 		};
 	}
 

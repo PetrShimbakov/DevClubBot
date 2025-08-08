@@ -26,7 +26,8 @@ class Config {
 	};
 
 	public readonly categories = {
-		orderChats: getEnvVar("ORDER_CHATS_CATEGORY_ID")
+		orderChats: getEnvVar("ORDER_CHATS_CATEGORY_ID"),
+		ordersArchive: getEnvVar("ORDERS_ARCHIVE_CATEGORY_ID")
 	};
 
 	public readonly imageUrls = {

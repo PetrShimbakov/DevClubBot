@@ -26,7 +26,7 @@ export async function takeOrder(orderData: OrderData, userData: IUserData, user:
 			ReadMessageHistory: true
 		});
 
-		const res = await channel.send(messages.orderTaken(takenOrderData, userData, user));
+		const res = await channel.send(messages.orderTaken(takenOrderData, userData));
 		await ordersData.setOrderTakenMessageId(orderId, res.id);
 	} catch (err) {
 		try {

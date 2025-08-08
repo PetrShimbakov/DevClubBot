@@ -6,7 +6,7 @@ import { getDiscordDate } from "../../../utils/message-utils";
 
 export function getOrdersModerateListEmbed(order: OrderData, currentPage: number, pagesQty: number) {
 	return new EmbedBuilder()
-		.setTitle(`Ваш заказ номер ${order.orderNumber}`)
+		.setTitle(`Заказ номер ${order.orderNumber}`)
 		.setColor("#816CE0")
 		.setFooter({
 			text: `📄 Страница ${currentPage} из ${pagesQty}.`

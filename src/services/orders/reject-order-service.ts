@@ -3,6 +3,8 @@ import client from "../../client";
 import config from "../../config";
 import ordersData from "../../models/orders-data";
 import { OrderData } from "../../types/order";
+import { safeSendDM } from "../../utils/dm-utils";
+import messages from "../../views/messages/messages";
 import { sendOrder } from "./send-order-service";
 
 export async function rejectOrder(orderData: OrderData) {
@@ -28,6 +30,9 @@ export async function rejectOrder(orderData: OrderData) {
 				.then(msg => msg.delete())
 				.catch(err => console.error("[reject-order-service] Failed to remove orderTakenMessage:", err));
 		}
+
+		const orderDev = await guild.members.fetch(orderData.takenBy).catch(() => undefined);
+		if (orderDev) safeSendDM(orderDev.user, messages.orderRejected(orderData));
 
 		sendOrder(orderData.type);
 	} catch (err) {
