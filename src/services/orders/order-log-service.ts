@@ -5,7 +5,7 @@ import config from "../../config";
 export async function sendOrderLog(message: MessageCreateOptions) {
 	try {
 		const guild = client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId));
-		const channel = guild.channels.cache.get(config.channels.modLog) || (await guild.channels.fetch(config.channels.modLog));
+		const channel = guild.channels.cache.get(config.channels.orderLog) || (await guild.channels.fetch(config.channels.orderLog));
 		if (!channel || !channel.isSendable()) throw new Error("modLog channel is not sendable!");
 		await channel.send(message);
 	} catch (err) {
