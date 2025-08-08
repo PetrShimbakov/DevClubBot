@@ -32,7 +32,6 @@ export function getOrderInfoEmbed(order: OrderData) {
 			iconURL: config.imageUrls.logo
 		})
 		.setTimestamp()
-		.setImage(config.imageUrls.banner)
 		.setDescription(
 			[
 				`**Номер:** ${order.orderNumber}`,
