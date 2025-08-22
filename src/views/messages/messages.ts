@@ -1,4 +1,4 @@
-import { ActionRowBuilder, InteractionReplyOptions, MessageCreateOptions, MessageFlags, User } from "discord.js";
+import { ActionRowBuilder, AttachmentBuilder, InteractionReplyOptions, MessageCreateOptions, MessageFlags, MessageReplyOptions, User } from "discord.js";
 import config from "../../config";
 import { confirmActionDescriptions } from "../../constants/confirm-action-descriptions";
 import { roleOrderLimits, roleTakenOrdersLimits } from "../../constants/orders/order-limits";
@@ -153,6 +153,18 @@ class Messages {
 		return {
 			content: `Пользователь <@${closedBy}> закрыл ваш заказ №${order.orderNumber}.`,
 			embeds: [getOrderInfoEmbed(order)]
+		};
+	}
+	public orderArchive(orderNumber: number, attachments: AttachmentBuilder[]): MessageCreateOptions {
+		return {
+			content: `Архив заказа **№${orderNumber}**.`,
+			files: attachments
+		};
+	}
+	public orderArchiveAdditionalFiles(orderNumber: number, attachments: AttachmentBuilder[]): MessageReplyOptions {
+		return {
+			content: `Архив заказа **№${orderNumber}**. Дополнительные файлы.`,
+			files: attachments
 		};
 	}
 

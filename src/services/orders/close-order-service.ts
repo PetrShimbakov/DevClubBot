@@ -5,6 +5,7 @@ import ordersData from "../../models/orders-data";
 import { OrderData } from "../../types/order";
 import { safeSendDM } from "../../utils/dm-utils";
 import messages from "../../views/messages/messages";
+import { archiveOrderChat } from "./order-archive-service";
 import { sendOrderLog } from "./order-log-service";
 
 export async function closeOrder(orderData: OrderData, closedBy: string) {
@@ -15,7 +16,8 @@ export async function closeOrder(orderData: OrderData, closedBy: string) {
 		const channel = guild.channels.cache.get(orderData.orderChannelId) || (await guild.channels.fetch(orderData.orderChannelId));
 
 		if (channel && channel.type === ChannelType.GuildText) {
-			await channel.setParent(config.categories.ordersArchive, { lockPermissions: true });
+			await archiveOrderChat(channel, orderData);
+			await channel.delete(`Заказ был закрыт пользователем ${closedBy}.`);
 			channelDeleted = true;
 		} else console.warn(`[close-order-service] Channel not found for order ${orderData.id}, will still remove order from DB.`);
 

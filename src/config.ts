@@ -22,12 +22,12 @@ class Config {
 		ordersList: getEnvVar("ORDERS_LIST_CHANNEL_ID"),
 		supportLog: getEnvVar("SUPPORT_LOG_CHANNEL_ID"),
 		modLog: getEnvVar("MOD_LOG_CHANNEL_ID"),
-		orderLog: getEnvVar("ORDER_LOG_CHANNEL_ID")
+		orderLog: getEnvVar("ORDER_LOG_CHANNEL_ID"),
+		ordersArchive: getEnvVar("ORDERS_ARCHIVE_CHANNEL_ID")
 	};
 
 	public readonly categories = {
-		orderChats: getEnvVar("ORDER_CHATS_CATEGORY_ID"),
-		ordersArchive: getEnvVar("ORDERS_ARCHIVE_CATEGORY_ID")
+		orderChats: getEnvVar("ORDER_CHATS_CATEGORY_ID")
 	};
 
 	public readonly imageUrls = {

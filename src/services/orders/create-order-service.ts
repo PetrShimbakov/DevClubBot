@@ -47,6 +47,13 @@ export async function createOrder(user: User, orderDescription: string, orderBud
 			ReadMessageHistory: true
 		});
 
+		await orderChannel.permissionOverwrites.edit(config.roleIds.moderator, {
+			ViewChannel: true,
+			SendMessages: true,
+			AttachFiles: true,
+			ReadMessageHistory: true
+		});
+
 		await orderChannel.send(messages.newOrderChannelInfo(orderData));
 
 		await sendOrder(orderType);

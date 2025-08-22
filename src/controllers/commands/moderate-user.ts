@@ -21,7 +21,7 @@ export default async function moderateUser(initialInteraction: UserContextMenuCo
 	const abortController = userModerateSessions.start(userId);
 
 	try {
-		await initialInteraction.reply(messages.userModerate(initialInteraction.user, targetUserData.permissions));
+		await initialInteraction.reply(messages.userModerate(initialInteraction.targetUser, targetUserData.permissions));
 
 		const message = await initialInteraction.fetchReply();
 
@@ -60,7 +60,7 @@ export default async function moderateUser(initialInteraction: UserContextMenuCo
 
 			if (!updatedUserData) return safeReply(initialInteraction, errorMessages.userNotRegistered);
 
-			buttonInteraction.update(deleteMsgFlags(messages.userModerate(initialInteraction.user, updatedUserData.permissions)));
+			buttonInteraction.update(deleteMsgFlags(messages.userModerate(initialInteraction.targetUser, updatedUserData.permissions)));
 		}
 	} catch (error) {
 		if (error instanceof Error && error.message === "abort") {

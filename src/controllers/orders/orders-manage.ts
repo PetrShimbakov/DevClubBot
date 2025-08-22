@@ -35,6 +35,8 @@ export const handleCreateOrderButton = rateLimit<ButtonInteraction<"cached">>(CR
 	const member = initialInteraction.member;
 	const userOrdersQty = (await ordersData.getOrders(userId)).length;
 
+	if ((await ordersData.getOrders()).length >= 40) return safeReply(initialInteraction, errorMessages.orderSystemOverloaded);
+
 	if (!member) return safeReply(initialInteraction, errorMessages.unknown); // recommendation from community
 
 	const abortController = createOrderSessions.start(userId);
