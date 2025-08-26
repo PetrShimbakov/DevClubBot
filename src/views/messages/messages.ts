@@ -90,11 +90,12 @@ class Messages {
 		};
 	}
 
-	public newOrder(orderType: OrderType, clientUserId: string): MessageCreateOptions {
+	public newOrder(orderType: OrderType, order: OrderData): MessageCreateOptions {
 		const pings = orderRoles[orderType].map(roleId => `<@&${roleId}>`).join(", ");
 
 		return {
-			content: `🆕 ${pings}, у вас новый заказ от <@${clientUserId}>! Нажмите кнопку ниже, чтобы увидеть все доступные вам заказы. Не затягивайте — кто-то может успеть взять заказ раньше!`,
+			content: `🆕 ${pings}, у вас новый заказ! Нажмите кнопку ниже, чтобы увидеть все доступные вам заказы. Не затягивайте — кто-то может успеть взять заказ раньше!`,
+			embeds: [getOrderInfoEmbed(order)],
 			components: [new ActionRowBuilder().addComponents(viewOrdersListButton).toJSON()]
 		};
 	}

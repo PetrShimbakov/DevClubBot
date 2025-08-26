@@ -31,7 +31,6 @@ export function getOrderInfoEmbed(order: OrderData) {
 			text: "Roblox Developer Club",
 			iconURL: config.imageUrls.logo
 		})
-		.setTimestamp()
 		.setDescription(
 			[
 				`**Номер:** ${order.orderNumber}`,

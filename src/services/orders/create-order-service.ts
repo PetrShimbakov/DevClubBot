@@ -56,7 +56,7 @@ export async function createOrder(user: User, orderDescription: string, orderBud
 
 		await orderChannel.send(messages.newOrderChannelInfo(orderData));
 
-		await sendOrder(orderType, user.id);
+		await sendOrder(orderType, orderData);
 	} catch (err) {
 		if (orderChannel)
 			await orderChannel.delete().catch(err => console.error(`[create-order-service] Failed to remove order channel during rollback (ID: ${orderData?.id ?? "unknown"}):`, err));
