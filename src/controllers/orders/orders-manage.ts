@@ -8,7 +8,7 @@ import {
 	ORDER_MODAL_ID,
 	ORDER_TYPE_SELECT_MENU_ID
 } from "../../constants/component-ids";
-import { DEFAULT_ORDER_LIMIT, roleOrderLimits } from "../../constants/orders/order-limits";
+import { DEFAULT_ORDER_COOLDOWN_LIMIT, DEFAULT_ORDER_LIMIT, roleOrderCooldownLimits, roleOrderLimits } from "../../constants/orders/order-limits";
 import { CREATE_ORDER_BUTTON_RATE_LIMIT, VIEW_MY_ORDERS_BUTTON_RATE_LIMIT } from "../../constants/rate-limits";
 import { MY_ORDERS_LIST_TIMEOUT, ORDER_CREATION_TIMEOUT } from "../../constants/timeouts";
 import ordersData from "../../models/orders-data";
@@ -48,6 +48,12 @@ export const handleCreateOrderButton = rateLimit<ButtonInteraction<"cached">>(CR
 
 		const ordersLimit = member.roles.cache.reduce((max, role) => Math.max(max, roleOrderLimits[role.id] ?? DEFAULT_ORDER_LIMIT), DEFAULT_ORDER_LIMIT);
 		if (userOrdersQty >= ordersLimit) return safeReply(initialInteraction, errorMessages.ordersLimitReached(ordersLimit));
+
+		if (userData.lastOrderAt) {
+			const cooldownLimit = member.roles.cache.reduce((min, role) => Math.min(min, roleOrderCooldownLimits[role.id] ?? DEFAULT_ORDER_COOLDOWN_LIMIT), DEFAULT_ORDER_COOLDOWN_LIMIT);
+			const diffMinutes = (Date.now() - userData.lastOrderAt.getTime()) / 60_000;
+			if (diffMinutes < cooldownLimit) return safeReply(initialInteraction, errorMessages.orderCooldownLimit(cooldownLimit - diffMinutes));
+		}
 
 		let selectMenuInteraction;
 		try {
@@ -100,6 +106,7 @@ export const handleCreateOrderButton = rateLimit<ButtonInteraction<"cached">>(CR
 
 		await createOrder(modalInteraction.user, orderDescription, orderBudget, selectedOrderType);
 
+		await usersData.updateLastOrderDate(userId);
 		await safeReply(modalInteraction, successMessages.ordered);
 	} catch (error) {
 		if (error instanceof Error && error.message === "abort") {

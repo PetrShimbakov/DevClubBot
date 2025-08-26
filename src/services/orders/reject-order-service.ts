@@ -5,9 +5,9 @@ import ordersData from "../../models/orders-data";
 import { OrderData } from "../../types/order";
 import { safeSendDM } from "../../utils/dm-utils";
 import messages from "../../views/messages/messages";
-import { sendOrder } from "./send-order-service";
+import { sendOrderLog } from "./order-log-service";
 
-export async function rejectOrder(orderData: OrderData) {
+export async function rejectOrder(orderData: OrderData, rejectedBy: string) {
 	const guild = client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId));
 	const channel = guild.channels.cache.get(orderData.orderChannelId) || (await guild.channels.fetch(orderData.orderChannelId));
 
@@ -34,7 +34,7 @@ export async function rejectOrder(orderData: OrderData) {
 		const orderDev = await guild.members.fetch(orderData.takenBy).catch(() => undefined);
 		if (orderDev) safeSendDM(orderDev.user, messages.orderRejected(orderData));
 
-		sendOrder(orderData.type);
+		sendOrderLog(messages.orderRejectedLog(orderData, rejectedBy));
 	} catch (err) {
 		try {
 			await (channel as any).permissionOverwrites.edit(orderData.takenBy, {

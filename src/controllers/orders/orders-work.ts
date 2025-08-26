@@ -136,7 +136,7 @@ export const handleOrderRejectButton = rateLimit<ButtonInteraction<"cached">>(OR
 		const isConfirmed = await confirmAction(interaction, "rejectOrder");
 		if (!isConfirmed) return;
 
-		await rejectOrder(orderData);
+		await rejectOrder(orderData, userId);
 		safeReply(interaction, successMessages.orderRejected);
 	} catch (error) {
 		console.error(`[orders-work-controller] handleOrderRejectButton: Unknown error for user ${interaction.user.id}:`, error);

@@ -4,6 +4,7 @@ import clearChat from "../controllers/commands/clear-chat";
 import { moderateOrders } from "../controllers/commands/moderate-orders";
 import sendOrderMenu from "../controllers/commands/send-order-menu";
 import sendPriceList from "../controllers/commands/send-price-list";
+import sendPunishments from "../controllers/commands/send-punishments";
 import sendRoles from "../controllers/commands/send-roles";
 import sendRules from "../controllers/commands/send-rules";
 import sendSupport from "../controllers/commands/send-support";
@@ -27,6 +28,15 @@ const slashCommands = new CommandsBuilder<SlashCommand>()
 			.setDescription("Отошлет правила сервера в указанный канал.")
 			.addChannelOption(new SlashCommandChannelOption().setName("target-channel").setDescription("Канал, в который будут отправлены правила.").setRequired(true)),
 		sendRules,
+		[]
+	)
+
+	.addCommand(
+		new SlashCommandBuilder()
+			.setName("send-punishments")
+			.setDescription("Отошлет список наказаний в указанный канал.")
+			.addChannelOption(new SlashCommandChannelOption().setName("target-channel").setDescription("Канал, в который будет отправлен список.").setRequired(true)),
+		sendPunishments,
 		[]
 	)
 

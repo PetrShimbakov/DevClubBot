@@ -43,6 +43,11 @@ class UsersData {
 		return (await usersCollection.findOne({ discordId })) ?? undefined;
 	}
 
+	public async updateLastOrderDate(discordId: string, date: Date = new Date()): Promise<void> {
+		const usersCollection = await this.getCollection();
+		await usersCollection.updateOne({ discordId }, { $set: { lastOrderAt: date } });
+	}
+
 	public async addRole(discordId: string, roleData: RoleData, newUserName: string): Promise<void> {
 		const usersCollection = await this.getCollection();
 

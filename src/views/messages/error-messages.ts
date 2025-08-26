@@ -1,6 +1,6 @@
 import { InteractionReplyOptions, MessageFlags } from "discord.js";
 import config from "../../config";
-import { roleOrderLimits, roleTakenOrdersLimits } from "../../constants/orders/order-limits";
+import { roleTakenOrdersLimits } from "../../constants/orders/order-limits";
 
 class ErrorMessages {
 	public readonly inDev: InteractionReplyOptions = {
@@ -116,11 +116,8 @@ class ErrorMessages {
 	}
 
 	public ordersLimitReached(limit: number): InteractionReplyOptions {
-		const boosterLimit = roleOrderLimits[config.roleIds.booster];
-		const superClientLimit = roleOrderLimits[config.roleIds.superClient];
-
 		return {
-			content: `У тебя уже открыто максимальное количество заказов — ${limit}. Если хочешь расширить свои возможности, приобрети пасс у владельца сервера <@1058787941364797490> — лимит станет ${superClientLimit}. Или просто забусти сервер, и тогда лимит вырастет до ${boosterLimit} на всё время действия буста!`,
+			content: `У тебя уже открыто максимальное количество заказов — ${limit}. Хочешь увеличить лимит? Подробнее — в канале <#1397626251694313554>.`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
@@ -130,7 +127,7 @@ class ErrorMessages {
 		const superDevLimit = roleTakenOrdersLimits[config.roleIds.superDev];
 
 		return {
-			content: `Ты уже взял максимальное количество заказов — ${limit}. Если хочешь расширить свои возможности, приобрети пасс у владельца сервера <@1058787941364797490> — лимит станет ${superDevLimit}. Или просто забусти сервер, и тогда лимит вырастет до ${boosterLimit} на всё время действия буста!`,
+			content: `Ты уже взял максимальное количество заказов — ${limit}. Хочешь увеличить лимит? Подробнее — в канале <#1397626251694313554>.`,
 			flags: MessageFlags.Ephemeral
 		};
 	}
@@ -155,6 +152,18 @@ class ErrorMessages {
 		const secWord = n > 10 && n < 20 ? "секунд" : n1 === 1 ? "секунду" : n1 > 1 && n1 < 5 ? "секунды" : "секунд";
 		return {
 			content: `Ого, не так быстро! Дай отдышаться еще ${timeLeft} ${secWord}, у меня чуть не расплавился сервер. 🔥`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
+	public orderCooldownLimit(timeLeft: number): InteractionReplyOptions {
+		const minutes = Math.max(1, Math.ceil(timeLeft));
+		const n = minutes % 100;
+		const n1 = minutes % 10;
+		const minWord = n > 10 && n < 20 ? "минут" : n1 === 1 ? "минуту" : n1 > 1 && n1 < 5 ? "минуты" : "минут";
+
+		return {
+			content: `Не спеши, шустрик — таймер ещё тикает. Новый заказ можно оформить через ${minutes} ${minWord}. За это время я остужу кулеры, подумаю о вечном... и напомню: если хочешь сократить ожидание, приобрети донатную роль. Подробнее — в канале <#1397626251694313554> 💎🔥🧊`,
 			flags: MessageFlags.Ephemeral
 		};
 	}

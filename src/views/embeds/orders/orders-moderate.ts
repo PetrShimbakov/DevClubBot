@@ -114,3 +114,33 @@ export function getOrderClosedLogEmbed(order: OrderData, closedBy: string) {
 			}
 		);
 }
+
+export function getOrderRejectedLogEmbed(order: OrderData, rejectedBy: string) {
+	return new EmbedBuilder()
+		.setTitle(`Заказ №${order.orderNumber} был возвращен.`)
+		.setColor("#816CE0")
+
+		.addFields(
+			{
+				name: "📦 Подробности заказа:",
+				value: [
+					`**Номер:** ${order.orderNumber}`,
+					`**ID:** ${order.id}`,
+					`**Заказал:** <@${order.orderedBy}>`,
+					`**Тип:** ${orderEmojis[order.type]} ${orderLabels[order.type]}`,
+					`**Статус:** ${order.isTaken ? "В работе" : "Ожидание отклика"}`,
+					`**Взял: <@${order.takenBy}>**`,
+					`**Дата создания:** ${getDiscordDate(order.createdAt)}`,
+					`**Бюджет:** ${order.budget}`,
+					`**Чат заказа:** <#${order.orderChannelId}>`,
+					`**Описание:** ${order.description}`
+				]
+					.filter(Boolean)
+					.join("\n")
+			},
+			{
+				name: "🏁 Подробности возврата:",
+				value: [`**Вернул:** <@${rejectedBy}>`, `**Дата:** ${getDiscordDate(new Date())}`].join("\n")
+			}
+		);
+}

@@ -12,6 +12,7 @@ export interface IUserData {
 	name: string;
 	bio?: string;
 	createdAt: Date;
+	lastOrderAt?: Date;
 	rolesData: RoleData[];
 	permissions: {
 		canCreateOrders: boolean;

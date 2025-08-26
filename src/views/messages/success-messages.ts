@@ -22,6 +22,14 @@ class SuccessMessages {
 			flags: MessageFlags.Ephemeral
 		};
 	}
+
+	public punishmentsSent(channelId: string): InteractionReplyOptions {
+		return {
+			content: `Я успешно отправил список наказаний в указанный вами канал <#${channelId}>.`,
+			flags: MessageFlags.Ephemeral
+		};
+	}
+
 	public supportSent(channelId: string): InteractionReplyOptions {
 		return {
 			content: `Я успешно отправил меню для обращения в поддержку в указанный вами канал <#${channelId}>.`,
