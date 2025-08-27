@@ -19,4 +19,4 @@ export const roleOrderCooldownLimits: Record<string, number> = {
 	[config.roleIds.superClient]: 30,
 	[config.roleIds.booster]: 20
 };
-export const DEFAULT_ORDER_COOLDOWN_LIMIT = 90 - 87;
+export const DEFAULT_ORDER_COOLDOWN_LIMIT = 90;
